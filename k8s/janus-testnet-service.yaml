@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yaml
+    kompose.version: 1.26.1 (a9d05d509)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: janus-testnet
+  name: janus-testnet
+spec:
+  ports:
+    - name: "23889"
+      port: 23889
+      targetPort: 23889
+  selector:
+    io.kompose.service: janus-testnet
+

@@ -1,0 +1,8 @@
+<form nz-form [formGroup]="formGroupUseBasicAuth" nzLayout="vertical">
+  <nz-form-item style="margin-bottom: 0">
+    <nz-form-control>
+      <label nz-checkbox style="font-size: 18px" formControlName="use_basic_auth" (nzCheckedChange)="updateUseBasicAuth(this.projectResponseInterface?.data?._id?.$oid, formGroupUseBasicAuth.value)">Enable Basic Authentication</label>
+      <p style="margin-bottom: 0; margin-left: 24px">Require project username and password for all requests</p>
+    </nz-form-control>
+  </nz-form-item>
+</form>

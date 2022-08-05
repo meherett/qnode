@@ -1,0 +1,27 @@
+<nz-layout *ngIf="screenWidth > 1259" [ngStyle]="{'min-height': screenHeight + 'px'}">
+  <nz-header style="position: fixed; width: 100%; background: transparent;">
+    <app-layout-passport-navbar></app-layout-passport-navbar>
+  </nz-header>
+  <nz-content>
+    <router-outlet></router-outlet>
+  </nz-content>
+</nz-layout>
+<nz-layout *ngIf="screenWidth <= 1259" [ngStyle]="{'min-height': screenHeight + 'px'}">
+  <div id="error" [ngStyle]="{'min-height': screenHeight + 'px'}">
+    <nz-result id="error-content" [nzIcon]="nzIcon404" [nzTitle]="nzTitle" [nzSubTitle]="nzSubTitle">
+      <ng-template #nzIcon404>
+        <h1 style="font-size: 54px;">QNode <small>· beta</small></h1>
+      </ng-template>
+      <ng-template #nzTitle>
+        <h4 style="font-size: 32px; font-weight: lighter; text-align: center">
+          Page Not Displayed!
+        </h4>
+      </ng-template>
+      <ng-template #nzSubTitle>
+        <p style="font-size: 18px; font-weight: lighter; text-align: center">
+          Sorry, the page is not displayed in mobile size for now. We will come back soon.
+        </p>
+      </ng-template>
+    </nz-result>
+  </div>
+</nz-layout>

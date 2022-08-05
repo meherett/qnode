@@ -1,0 +1,69 @@
+<nz-alert nzShowIcon nzCloseable *ngIf="profileAlert" [nzType]="profileAlert.type" [nzMessage]="profileAlert.message" style="margin-bottom: 20px" (nzOnClose)="profileAlert = null"></nz-alert>
+<form nz-form [formGroup]="formGroup" nzLayout="vertical"
+      (ngSubmit)="update(this.userResponseInterface?.data?._id?.$oid, formGroup.value)">
+  <nz-form-item [ngStyle]="{ 'margin-bottom' : formGroup.get('name')?.dirty ? formGroup.get('new_password')?.invalid ? '0px' : '8px' : '8px' }">
+    <nz-form-label>Organization Name</nz-form-label>
+    <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipOrganizationName">
+      <input nz-input nzSize="large" type="text" formControlName="name">
+      <ng-template #nzErrorTipOrganizationName let-control>
+        <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 100.</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item [ngStyle]="{ 'margin-bottom' : formGroup.get('url')?.dirty ? formGroup.get('url')?.invalid ? '0px' : '8px' : '8px' }">
+    <nz-form-label>Organization URL</nz-form-label>
+    <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipOrganizationURL">
+      <input nz-input nzSize="large" type="text" formControlName="url" placeholder="https://example.com">
+      <ng-template #nzErrorTipOrganizationURL let-control>
+        <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 100.</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item [ngStyle]="{ 'margin-bottom' : formGroup.get('role')?.dirty ? formGroup.get('role')?.invalid ? '0px' : '8px' : '8px' }">
+    <nz-form-label nzRequired>Your Role</nz-form-label>
+    <nz-form-control [nzErrorTip]="nzErrorTipOrganizationRole">
+      <nz-select formControlName="role" nzSize="large">
+        <nz-option *ngFor="let optionYourRole of optionsYourRole" [nzLabel]="optionYourRole.label" [nzValue]="optionYourRole.value"></nz-option>
+      </nz-select>
+      <ng-template #nzErrorTipOrganizationRole let-control>
+        <ng-container *ngIf="control.errors?.required">Your role is required.</ng-container>
+        <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 100.</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item [ngStyle]="{ 'margin-bottom' : formGroup.get('size')?.dirty ? formGroup.get('size')?.invalid ? '0px' : '8px' : '8px' }">
+    <nz-form-label nzRequired>Organization Size</nz-form-label>
+    <nz-form-control [nzErrorTip]="nzErrorTipOrganizationSize">
+      <nz-select formControlName="size" nzSize="large">
+        <nz-option *ngFor="let optionOrganizationSize of optionsOrganizationSize" [nzLabel]="optionOrganizationSize.label" [nzValue]="optionOrganizationSize.value"></nz-option>
+      </nz-select>
+      <ng-template #nzErrorTipOrganizationSize let-control>
+        <ng-container *ngIf="control.errors?.required">Organization size is required.</ng-container>
+        <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 100.</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzRequired>Organization Category</nz-form-label>
+    <nz-form-control [nzErrorTip]="nzErrorTipOrganizationCategory">
+      <nz-select formControlName="category" nzSize="large">
+        <nz-option *ngFor="let optionOrganizationCategory of optionsOrganizationCategory" [nzLabel]="optionOrganizationCategory.label" [nzValue]="optionOrganizationCategory.value"></nz-option>
+      </nz-select>
+      <ng-template #nzErrorTipOrganizationCategory let-control>
+        <ng-container *ngIf="control.errors?.required">Organization category is required.</ng-container>
+        <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 100.</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item style="margin-bottom: 0">
+    <nz-form-control>
+      <div class="actions-end">
+        <button nz-button type="button" (click)="clear()" nzType="default" style="margin-right: 15px">
+          <i nz-icon nzType="clear" nzTheme="outline"></i>
+        </button>
+        <button nz-button type="submit" [nzLoading]="nzLoading"
+                nzType="primary">SAVE</button>
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+</form>

@@ -1,0 +1,53 @@
+@import "mixin";
+
+.themeMixin({
+  :host {
+    //#qnode-logo {
+    //  color: @white;
+    //}
+
+    #theme-bg {
+      background: @layout-header-background;
+    }
+  }
+});
+
+
+#home-dashboard-navbar {
+  position: relative;
+  height: 64px;
+  padding: 0 24px;
+  width: 100%;
+
+  #home-navbar-left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: auto 0;
+
+    .home-navbar-trigger {
+      font-size: 20px;
+      transition: all .3s,padding 0s;
+    }
+
+    .home-navbar-title {
+      margin: 0 20px 0 20px;
+      font-size: 16px;
+      font-weight: normal;
+    }
+  }
+
+  #home-navbar-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto 0;
+  }
+
+  #home-navbar-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: auto 0;
+  }
+}

@@ -1,0 +1,51 @@
+<nz-spin nzSize="large" *ngIf="nzSpinningTheme" [nzSpinning]="nzSpinningTheme" id="theme-bg" [ngStyle]="{'height': screenHeight + 'px', 'width': '100%'}"
+         [nzTip]="switchValue ? 'Changing theme to dark...' : 'Changing theme to default...'"></nz-spin>
+
+<div nz-row id="home-dashboard-navbar" nzAlign="top">
+    <div nz-col id="home-navbar-left" nzFlex="16">
+      <img src="assets/svg/qtum-logo-blue.svg" routerLink="/" style="width: auto; height: 40px"/>
+      <a id="qnode-logo" style="font-size: 24px; font-weight: lighter;" class="home-navbar-title" routerLink="/">
+        QNode <small>· beta</small>
+      </a>
+      <ul nz-menu nzTheme="light" nzMode="horizontal" style="background: transparent">
+        <li nz-menu-item routerLink="/dashboard/project" nzMatchRouter="/dashboard/project">PROJECT</li>
+        <li nz-menu-item routerLink="/dashboard/stats" nzMatchRouter="/dashboard/stats">STATS</li>
+        <li nz-menu-item routerLink="/dashboard/settings" nzMatchRouter="/dashboard/setting">SETTINGS</li>
+<!--        <li nz-menu-item nzDisabled>PRICING</li>-->
+        <li nz-menu-item nzDisabled>STATUS</li>
+      </ul>
+    </div>
+    <div nz-col id="home-navbar-center" nzFlex="0"></div>
+    <div nz-col id="home-navbar-right" nzFlex="8">
+<!--      <span style="margin-right: 10px;">{{ "menu.night.mode" | translate }}</span>-->
+      <nz-switch
+        [(ngModel)]="switchValue"
+        (ngModelChange)="onSwitch()"
+        [nzCheckedChildren]="checkedTemplate"
+        [nzUnCheckedChildren]="unCheckedTemplate"
+      ></nz-switch>
+      <ng-template #checkedTemplate>
+        <i class="far fa-sun"></i>
+      </ng-template>
+      <ng-template #unCheckedTemplate>
+        <i class="far fa-moon"></i>
+      </ng-template>
+      <nz-divider nzType="vertical" style="margin: 0 16px"></nz-divider>
+      <div nz-dropdown [nzDropdownMenu]="menu">
+        <i nz-icon nzType="translation" style="margin-right: 5px"></i>
+        {{ languageInterface.text }}
+        <i nz-icon nzType="down" style="margin-left: 5px"></i>
+      </div>
+      <nz-dropdown-menu #menu="nzDropdownMenu">
+        <ul nz-menu nzSelectable>
+          <li nz-menu-item *ngFor="let languageInterface of languageInterfaces" (click)="changeLanguage(languageInterface)"
+              [nzSelected]="languageInterface.text === this.storageService.getStorage('language')">
+            <span role="img" [attr.aria-label]="languageInterface.text" class="pr-xs">{{languageInterface.abbreviation}}</span>
+            {{ languageInterface.text }}
+          </li>
+        </ul>
+      </nz-dropdown-menu>
+      <nz-divider nzType="vertical" style="margin: 0 16px"></nz-divider>
+      <button nz-button nzSize="default" nzType="primary" (click)="logout()">LOGOUT</button>
+    </div>
+</div>

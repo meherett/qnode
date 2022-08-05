@@ -1,0 +1,38 @@
+<nz-alert nzShowIcon nzCloseable *ngIf="requestsAlert" [nzType]="requestsAlert.type" [nzMessage]="requestsAlert.message" style="margin-bottom: 20px" (nzOnClose)="requestsAlert = null"></nz-alert>
+<form nz-form [formGroup]="formGroup" nzLayout="vertical"
+      (ngSubmit)="updateRequests(this.projectResponseInterface?.data?._id?.$oid, formGroup.value)">
+  <div nz-row nzGutter="16">
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label nzRequired>Per Second Requests</nz-form-label>
+        <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipPerSecondRequests">
+          <input nz-input nzSize="large" type="number" formControlName="per_second_requests">
+          <ng-template #nzErrorTipPerSecondRequests let-control>
+            <ng-container *ngIf="control.errors?.required" >Per second requests is required.</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label nzRequired>Per Day Requests</nz-form-label>
+        <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipPerDayRequests">
+          <input nz-input nzSize="large" type="number" formControlName="per_day_requests">
+          <ng-template #nzErrorTipPerDayRequests let-control>
+            <ng-container *ngIf="control.errors?.required" style="font-size: 9px">Per day requests is required.</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <nz-form-item style="margin-bottom: 0">
+    <nz-form-control>
+      <div class="actions-end">
+        <button nz-button type="button" (click)="clear()" nzType="default" style="margin-right: 15px">
+          <i nz-icon nzType="clear" nzTheme="outline"></i>
+        </button>
+        <button nz-button type="submit" [nzLoading]="nzLoadingRequests" nzType="primary">SAVE</button>
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+</form>

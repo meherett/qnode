@@ -1,0 +1,50 @@
+<nz-alert nzShowIcon nzCloseable *ngIf="allowedMethodAlert" [nzType]="allowedMethodAlert.type" [nzMessage]="allowedMethodAlert.message" style="margin-bottom: 20px" (nzOnClose)="allowedMethodAlert = null"></nz-alert>
+<form nz-form [formGroup]="formGroup" nzLayout="vertical"
+      (ngSubmit)="addAllowedMethod(this.projectResponseInterface?.data?._id?.$oid, formGroup.value)">
+  <div style="display: flex; flex-direction: row;">
+    <nz-form-item style="margin-bottom: 0; width: 100%">
+      <nz-form-label nzRequired>API Request Method</nz-form-label>
+      <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipUsername">
+        <nz-select  formControlName="method" [nzDropdownMatchSelectWidth]="false" nzSize="large">
+          <nz-option *ngFor="let optionsMethod of optionsMethods" [nzLabel]="optionsMethod.label" [nzValue]="optionsMethod.value"></nz-option>
+        </nz-select>
+        <ng-template #nzErrorTipUsername let-control>
+          <ng-container *ngIf="control.errors?.required">Method is required.</ng-container>
+          <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 200.</ng-container>
+        </ng-template>
+      </nz-form-control>
+    </nz-form-item>
+    <nz-form-item style="margin-bottom: 0; margin-left: 16px;">
+      <nz-form-label></nz-form-label>
+      <nz-form-control>
+        <div class="actions-end">
+          <button nz-button type="button" (click)="clear()" nzType="default" style="margin-right: 15px">
+            <i nz-icon nzType="clear" nzTheme="outline"></i>
+          </button>
+          <button nz-button type="submit" [nzLoading]="nzLoadingAdd" [disabled]="false" nzType="primary">ADD</button>
+        </div>
+      </nz-form-control>
+    </nz-form-item>
+  </div>
+</form>
+
+<nz-divider></nz-divider>
+
+<nz-spin nzSize="large" [nzSpinning]="nzLoadingAdd || nzLoadingRemove">
+  <nz-table #allowed_methods nzBordered [nzData]="projectResponseInterface?.data?.security?.allowed_methods" [nzShowPagination]="true" [nzPageSize]="5">
+    <thead>
+    <tr>
+      <th nzAlign="left" style="width: 100%">Allowed Method</th>
+      <th nzAlign="center">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let allowed_method of allowed_methods.data">
+      <td nzBreakWord nzAlign="left" style="width: 100%">{{ allowed_method }}</td>
+      <td nzAlign="center">
+        <button nz-button nzSize="default" type="button" (click)="removeAllowedMethod(this.projectResponseInterface?.data?._id?.$oid, { method: allowed_method })" nzType="default">REMOVE</button>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>

@@ -1,0 +1,27 @@
+<div id="error">
+  <nz-card nzHoverable id="error-content">
+    <nz-result [nzIcon]="nzIcon404" [nzTitle]="nzTitle" [nzSubTitle]="nzSubTitle">
+      <div nz-result-extra>
+        <button nz-button *ngIf="!this.storageService.getStorage('accessToken')" nzType="primary" routerLink="/" style="margin-right: 16px">BACK TO HOME</button>
+        <button nz-button *ngIf="this.storageService.getStorage('accessToken')" nzType="primary" routerLink="/dashboard">BACK TO DASHBOARD</button>
+      </div>
+      <ng-template #nzIcon404>
+        <i nz-icon nzType="check-circle" style="color: #52c41a" *ngIf="!nzLoading && confirmEmailAlert?.type === 'success'" nzTheme="fill"></i>
+        <i nz-icon nzType="close-circle" style="color: #faad14" *ngIf="!nzLoading && confirmEmailAlert?.type === 'warning'" nzTheme="fill"></i>
+        <i nz-icon nzType="close-circle" style="color: #f5222d" *ngIf="!nzLoading && confirmEmailAlert?.type === 'error'" nzTheme="fill"></i>
+<!--        <i nz-icon nzType="loading" *ngIf="nzLoading"></i>-->
+        <nz-spin nzSimple [nzSpinning]="nzLoading" [nzSize]="'large'"></nz-spin>
+      </ng-template>
+      <ng-template #nzTitle>
+        <h4 style="font-size: 32px; font-weight: lighter; text-align: center" *ngIf="!nzLoading && confirmEmailAlert?.type === 'success'">Successfully Confirmed Email Address</h4>
+        <h4 style="font-size: 32px; font-weight: lighter; text-align: center" *ngIf="!nzLoading && (confirmEmailAlert?.type === 'warning' || confirmEmailAlert?.type === 'error')">Email Address Confirmation Is Unsuccessful</h4>
+        <h4 style="font-size: 32px; font-weight: lighter; text-align: center" *ngIf="nzLoading">Confirming Email Address ...</h4>
+      </ng-template>
+      <ng-template #nzSubTitle>
+        <p style="font-size: 18px; font-weight: lighter; text-align: center">
+          {{confirmEmailAlert?.message}}
+        </p>
+      </ng-template>
+    </nz-result>
+  </nz-card>
+</div>

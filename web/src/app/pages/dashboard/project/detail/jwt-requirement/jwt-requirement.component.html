@@ -1,0 +1,8 @@
+<form nz-form [formGroup]="formGroupUseJWTAuth" nzLayout="vertical">
+  <nz-form-item style="margin-bottom: 0">
+    <nz-form-control>
+      <label nz-checkbox style="font-size: 18px" formControlName="use_jwt_auth" (nzCheckedChange)="updateUseJWTAuth(this.projectResponseInterface?.data?._id?.$oid, formGroupUseJWTAuth.value)">Enable JWT Authentication</label>
+      <p style="margin-bottom: 0; margin-left: 24px">Require Json Web Token (JWT) for all requests</p>
+    </nz-form-control>
+  </nz-form-item>
+</form>

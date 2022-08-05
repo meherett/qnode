@@ -1,0 +1,422 @@
+ {
+  "user": {
+    "collMod": "user",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["_id", "email", "password", "is_confirmed", "role", "theme", "date_created", "last_modified"],
+        "additionalProperties": false,
+        "properties": {
+          "_id": {
+            "title": "MongoDB ID",
+            "bsonType": "objectId",
+            "description": "MongoDB ID is required."
+          },
+          "email": {
+            "title": "Email",
+            "bsonType": "string",
+            "description": "Email is required."
+          },
+          "password": {
+            "title": "Password",
+            "bsonType": "string",
+            "description": "Password is required."
+          },
+          "is_confirmed": {
+            "title": "Is Confirmed",
+            "bsonType": "bool",
+            "description": "Is confirmed is required."
+          },
+          "2fa": {
+            "title": "Two-Factor Authentication",
+            "bsonType": "object",
+            "required": ["otp", "is_enabled"],
+            "description": "2FA must contain the stated fields.",
+            "additionalProperties": false,
+            "properties": {
+              "otp": {
+                "title": "One-Time Password",
+                "bsonType": ["string", "null"],
+                "description": "OTP is required."
+              },
+              "is_enabled": {
+                "title": "Is Enabled",
+                "bsonType": "bool",
+                "description": "Is enabled is required."
+              }
+            }
+          },
+          "role": {
+            "title": "Role",
+            "enum": ["admin", "user"],
+            "bsonType": "string",
+            "description": "Role must be one of the values listed and it's required."
+          },
+          "organization": {
+            "title": "Organization",
+            "bsonType": "object",
+            "required": ["name", "url", "role", "size", "category"],
+            "description": "Organization must contain the stated fields.",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "title": "Name",
+                "bsonType": ["string", "null"],
+                "description": "Name is not required."
+              },
+              "url": {
+                "title": "URL",
+                "bsonType": ["string", "null"],
+                "description": "URL is not required."
+              },
+              "role": {
+                "title": "Role",
+                "bsonType": ["string", "null"],
+                "description": "Role is not required."
+              },
+              "size": {
+                "title": "Size",
+                "bsonType": ["string", "null"],
+                "description": "Size is not required."
+              },
+              "category": {
+                "title": "Category",
+                "bsonType": ["string", "null"],
+                "description": "Category is not required."
+              }
+            }
+          },
+          "email_notification": {
+            "title": "Email Notification",
+            "bsonType": "bool",
+            "description": "Email notification is required."
+          },
+          "theme": {
+            "title": "Theme",
+            "enum": ["light", "dark"],
+            "bsonType": "string",
+            "description": "Theme must be one of the values listed and it's required."
+          },
+          "date_created": {
+            "title": "Date Created",
+            "bsonType": "date",
+            "description": "Date created is required."
+          },
+          "last_modified": {
+            "title": "Last Modified",
+            "bsonType": "date",
+            "description": "Last modified is required."
+          }
+        }
+      }
+    },
+    "validationLevel": "strict",
+    "validationAction": "error"
+  },
+  "project": {
+    "collMod": "project",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["_id", "name", "description", "key", "user_id", "security", "date_created", "last_modified"],
+        "additionalProperties": false,
+        "properties": {
+          "_id": {
+            "title": "MongoDB ID",
+            "bsonType": "objectId",
+            "description": "MongoDB ID is required."
+          },
+          "name": {
+            "title": "Name",
+            "bsonType": "string",
+            "description": "Name is required."
+          },
+          "description": {
+            "title": "Description",
+            "bsonType": ["string", "null"],
+            "maxLength": 1000,
+            "description": "Description is not required."
+          },
+          "key": {
+            "title": "Key",
+            "bsonType": "string",
+            "description": "Key is required."
+          },
+          "status": {
+            "title": "Status",
+            "enum": ["active", "inactive"],
+            "bsonType": "string",
+            "description": "Status must be one of the values listed and it's required."
+          },
+          "user_id": {
+            "title": "User ID",
+            "bsonType": "objectId",
+            "description": "User ID is required."
+          },
+          "security": {
+            "title": "Security",
+            "bsonType": "object",
+            "required": ["use_basic_auth", "basic_auths", "use_jwt_auth", "jwt_auths", "per_second_requests", "per_day_requests", "allowed_user_agents", "allowed_origins", "allowed_methods"],
+            "description": "Security must contain the stated fields.",
+            "additionalProperties": false,
+            "properties": {
+              "use_basic_auth": {
+                "title": "Use Basic Auth",
+                "bsonType": "bool",
+                "description": "Use basic auth is required."
+              },
+              "basic_auths": {
+                "bsonType": ["array"],
+                "minItems": 0,
+                "maxItems": 5,
+                "uniqueItems": true,
+                "additionalProperties": false,
+                "items": {
+                  "bsonType": ["object"],
+                  "required": ["username", "password"],
+                  "additionalProperties": false,
+                  "description": "Items must contain the stated fields.",
+                  "properties": {
+                    "username": {
+                      "title": "Username",
+                      "bsonType": "string",
+                      "description": "Username is required."
+                    },
+                    "password": {
+                      "title": "Password",
+                      "bsonType": "string",
+                      "description": "Password is required."
+                    }
+                  }
+                }
+              },
+              "use_jwt_auth": {
+                "title": "Use JWT Auth",
+                "bsonType": "bool",
+                "description": "Use JWT auth is required."
+              },
+              "jwt_auths": {
+                "bsonType": ["array"],
+                "minItems": 0,
+                "maxItems": 5,
+                "uniqueItems": true,
+                "additionalProperties": false,
+                "items": {
+                  "bsonType": ["object"],
+                  "required": ["name", "key", "public_key", "fingerprint"],
+                  "additionalProperties": false,
+                  "description": "Items must contain the stated fields.",
+                  "properties": {
+                    "name": {
+                      "title": "Name",
+                      "bsonType": "string",
+                      "description": "Name is required."
+                    },
+                    "key": {
+                      "title": "Key",
+                      "bsonType": "string",
+                      "description": "Key is required."
+                    },
+                    "public_key": {
+                      "title": "Public Key",
+                      "bsonType": "string",
+                      "description": "Public key is required."
+                    },
+                    "fingerprint": {
+                      "title": "Fingerprint",
+                      "bsonType": "string",
+                      "description": "Fingerprint is required."
+                    }
+                  }
+                }
+              },
+              "per_second_requests": {
+                "title": "Per Second Requests",
+                "bsonType": "int",
+                "description": "Per second requests is required."
+              },
+              "per_day_requests": {
+                "title": "Per Day Requests",
+                "bsonType": "int",
+                "description": "Per day requests is required."
+              },
+              "allowed_user_agents": {
+                "bsonType": ["array"],
+                "minItems": 0,
+                "uniqueItems": true,
+                "additionalProperties": false,
+                "items": {
+                  "title": "Allowed User Agent",
+                  "bsonType": "string",
+                  "description": "Allowed user agent is required."
+                }
+              },
+              "allowed_origins": {
+                "bsonType": ["array"],
+                "minItems": 0,
+                "uniqueItems": true,
+                "additionalProperties": false,
+                "items": {
+                  "title": "Allowed Origin",
+                  "bsonType": "string",
+                  "description": "Allowed origin is required."
+                }
+              },
+              "allowed_methods": {
+                "bsonType": ["array"],
+                "minItems": 0,
+                "uniqueItems": true,
+                "additionalProperties": false,
+                "items": {
+                  "title": "Allowed Method",
+                  "bsonType": "string",
+                  "description": "Allowed method is required."
+                }
+              }
+            }
+          },
+          "date_created": {
+            "title": "Date Created",
+            "bsonType": "date",
+            "description": "Date created is required."
+          },
+          "last_modified": {
+            "title": "Last Modified",
+            "bsonType": "date",
+            "description": "Last modified is required."
+          }
+        }
+      }
+    },
+    "validationLevel": "moderate",
+    "validationAction": "error"
+  },
+  "statistics": {
+    "collMod": "statistics",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["_id", "timestamp", "meta", "volume"],
+        "additionalProperties": false,
+        "properties": {
+          "_id": {
+            "title": "MongoDB ID",
+            "bsonType": "objectId",
+            "description": "MongoDB ID is required."
+          },
+          "timestamp": {
+            "title": "Timestamp",
+            "bsonType": "date",
+            "description": "Timestamp is required."
+          },
+          "metadata": {
+            "title": "Metadata",
+            "bsonType": "object",
+            "required": ["method", "user_id", "project_id"],
+            "description": "Metadata must contain the stated fields.",
+            "additionalProperties": false,
+            "properties": {
+              "method": {
+                "title": "Method",
+                "bsonType": "object",
+                "description": "Method is required."
+              },
+              "network": {
+                "title": "Network",
+                "enum": ["mainnet", "testnet"],
+                "bsonType": "string",
+                "description": "Network must be one of the values listed and it's required."
+              },
+              "timestamp": {
+                "title": "Timestamp",
+                "bsonType": "date",
+                "description": "Timestamp is required."
+              },
+              "user_id": {
+                "title": "User ID",
+                "bsonType": "objectId",
+                "description": "User ID is required."
+              },
+              "project_id": {
+                "title": "Project ID",
+                "bsonType": "objectId",
+                "description": "Project ID is required."
+              },
+              "valid": {
+                "title": "Valid",
+                "bsonType": "int",
+                "description": "Valid is required."
+              },
+              "invalid": {
+                "title": "Invalid",
+                "bsonType": "int",
+                "description": "Invalid is required."
+              },
+              "volume": {
+                "title": "Volume",
+                "bsonType": "int",
+                "description": "Volume is required."
+              }
+            }
+          }
+        }
+      }
+    },
+    "validationLevel": "moderate",
+    "validationAction": "error"
+  },
+  "token": {
+    "collMod": "token",
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["_id", "access_token", "refresh_token", "revoked", "user_id", "expiry", "date_created", "last_modified"],
+        "additionalProperties": false,
+        "properties": {
+          "_id": {
+            "title": "MongoDB ID",
+            "bsonType": "objectId",
+            "description": "MongoDB ID is required."
+          },
+          "access_token": {
+            "title": "Access Token",
+            "bsonType": "string",
+            "description": "Access token is required."
+          },
+          "refresh_token": {
+            "title": "Refresh Token",
+            "bsonType": "string",
+            "description": "Refresh token is required."
+          },
+          "revoked": {
+            "title": "Revoked",
+            "bsonType": "bool",
+            "description": "Revoked is required."
+          },
+          "user_id": {
+            "title": "User ID",
+            "bsonType": "objectId",
+            "description": "User ID is required."
+          },
+          "expiry_date": {
+            "title": "Expiry Date",
+            "bsonType": "date",
+            "description": "Expiry date is required."
+          },
+          "date_created": {
+            "title": "Date Created",
+            "bsonType": "date",
+            "description": "Date created is required."
+          },
+          "last_modified": {
+            "title": "Last Modified",
+            "bsonType": "date",
+            "description": "Last modified is required."
+          }
+        }
+      }
+    },
+    "validationLevel": "moderate",
+    "validationAction": "error"
+  }
+}

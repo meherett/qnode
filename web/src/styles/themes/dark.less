@@ -1,0 +1,28 @@
+@import (multiple) "../../../node_modules/ng-zorro-antd/src/style/themes/dark";
+@import "./base";
+
+@layout-sider-background: @component-background;
+@layout-header-background: @component-background;
+
+@particle-js-background: rgb(6,69,247);
+@particle-js-background-gradient: linear-gradient(0deg, rgba(6,69,247,1) 0%, rgba(6,69,247,1) 25%, rgba(255,255,255,0) 100%);
+@home-bg-gradient: transparent;
+
+:host {
+  .ant-menu-item, #qnode-logo {
+    color: @white;
+  }
+
+  #home-dashboard-navbar {
+    border-bottom: 0;
+    border-top: 0;
+    border-bottom: 2px solid @black;
+    transition: all .3s,padding 0s;
+  }
+
+  .ant-menu-horizontal {
+    border-bottom: 0;
+    border-top: 0;
+    box-shadow: none;
+  }
+}

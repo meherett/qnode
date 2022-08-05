@@ -1,0 +1,102 @@
+<div *ngIf="!userResponseInterface && nzLoadingGetUser" style="display: flex; width: 100%; height: 75vh; justify-content: center; align-items: center">
+  <nz-spin nzSimple nzSize="large" [nzSpinning]="nzLoadingGetUser"></nz-spin>
+</div>
+
+<div *ngIf="userResponseInterface && !nzLoadingGetUser">
+  <nz-spin [nzSpinning]="nzLoadingEmailConfirmation">
+    <nz-alert *ngIf="!this.storageService.getJSONStorage('is_confirmed')" nzType="info" [nzMessage]="nzMessage" nzShowIcon [nzCloseable]="false">
+      <ng-template #nzMessage>
+        <div nz-row style="width: 100%;">
+          <div nz-col nzFlex="auto" style="margin-top: 3px">Please confirm your email address</div>
+          <div nz-col nzFlex="200px">
+            <button nz-button nzSize="default" nzType="link" style="right: 0" (click)="sendEmailConfirmation()">SEND EMAIL CONFIRMATION</button>
+          </div>
+        </div>
+      </ng-template>
+    </nz-alert>
+  </nz-spin>
+
+  <nz-page-header style="padding-left: 0; padding-right: 0;">
+    <nz-page-header-title>Settings</nz-page-header-title>
+    <nz-page-header-subtitle style="font-size: 16px; margin-top: 4px">
+      Joined {{userResponseInterface?.data?.date_created?.$date | date}}
+    </nz-page-header-subtitle>
+    <!--  <nz-page-header-tags>-->
+    <!--  </nz-page-header-tags>-->
+    <nz-page-header-extra>
+      <!--    NETWORK-->
+      <!--    <nz-select [(ngModel)]="selected.value" (ngModelChange)="change_network($event)"-->
+      <!--               nzSize="large" nzPlaceHolder="Networks" style="width: 175px; margin-left: 10px">-->
+      <!--      <nz-option *ngFor="let option of options" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>-->
+      <!--    </nz-select>-->
+      <nz-modal nzCentered [(nzVisible)]="isDeleteVisible" nzTitle="DELETE ACCOUNT" (nzOnCancel)="handleDeleteCancel()">
+        <ng-container *nzModalContent>
+          <nz-alert nzShowIcon nzCloseable *ngIf="detailDeleteAlert" [nzType]="detailDeleteAlert.type" [nzMessage]="detailDeleteAlert.message" style="margin-bottom: 20px" (nzOnClose)="detailDeleteAlert = null"></nz-alert>
+          <p>Any applications using this account’s keys will no longer be able to access the QNode API. This can not be undone.</p>
+        </ng-container>
+        <ng-container *nzModalFooter>
+          <button nz-button type="button" nzType="default" (click)="handleDeleteCancel()">CANCEL</button>
+          <button nz-button type="submit" nzType="primary"  [nzLoading]="nzLoadingDeleteUser"
+                  (click)="deleteUser(this.userResponseInterface?.data?._id?.$oid)">DELETE</button>
+        </ng-container>
+      </nz-modal>
+      <button nz-button nzType="primary" (click)="showDeleteModal()">
+        <i nz-icon nzType="delete" nzTheme="outline"></i> DELETE ACCOUNT
+      </button>
+    </nz-page-header-extra>
+    <!--  <nz-breadcrumb nz-page-header-breadcrumb>-->
+    <!--    <nz-breadcrumb-item>QNode</nz-breadcrumb-item>-->
+    <!--    <nz-breadcrumb-item><a routerLink="/stats/all-projects" [queryParams]="{network: 'all_networks'}">Stats</a></nz-breadcrumb-item>-->
+    <!--    <nz-breadcrumb-item>{{_id_or_key === 'all-projects' ? 'All Projects' : _id_or_key}}</nz-breadcrumb-item>-->
+    <!--    <nz-breadcrumb-item>{{selected.label | titlecase}}</nz-breadcrumb-item>-->
+    <!--  </nz-breadcrumb>-->
+  </nz-page-header>
+
+  <div nz-row [nzGutter]="24">
+    <div nz-col [nzLg]="12" [nzMd]="12" [nzSm]="24">
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 16px 0">BASIC DETAILS</h3>
+      <nz-card nzHoverable [nzBordered]="false">
+        <app-basic-details [userResponseInterface]="userResponseInterface"></app-basic-details>
+      </nz-card>
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 16px 0">PROFILE</h3>
+      <nz-card nzHoverable [nzBordered]="false">
+        <!--      <p style="margin-bottom: 10px">We’re dedicated to creating meaningful product experiences for you. By giving us a small amount of information you’ll help us provide you with specific, relevant resources and features for your needs.</p>-->
+        <app-profile [userResponseInterface]="userResponseInterface"></app-profile>
+      </nz-card>
+    </div>
+    <div nz-col [nzLg]="12" [nzMd]="12" [nzSm]="24">
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 16px 0">PASSWORD</h3>
+      <nz-card nzHoverable [nzBordered]="false">
+        <app-password [userResponseInterface]="userResponseInterface"></app-password>
+      </nz-card>
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 16px 0">NOTIFICATIONS</h3>
+      <nz-card nzHoverable [nzBordered]="false" style="padding-bottom: 0">
+        <app-email-notifications [userResponseInterface]="userResponseInterface"></app-email-notifications>
+      </nz-card>
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 16px 0">2-FACTOR AUTHENTICATION</h3>
+      <nz-card nzHoverable [nzBordered]="false">
+        <app-two-factor-authentication [userResponseInterface]="userResponseInterface"></app-two-factor-authentication>
+      </nz-card>
+    </div>
+  </div>
+</div>
+<div *ngIf="!userResponseInterface && !nzLoadingGetUser" style="display: flex; width: 100%; height: 100%; justify-content: center; align-items: center;">
+  <nz-card nzHoverable>
+    <nz-result [nzIcon]="nzIcon404" [nzTitle]="nzTitle" [nzSubTitle]="nzSubTitle">
+      <div nz-result-extra>
+        <button nz-button nzType="primary" (click)="reload()">RELOAD</button>
+      </div>
+      <ng-template #nzIcon404>
+        <i nz-icon nzType="close-circle" style="color: #f5222d" nzTheme="fill"></i>
+      </ng-template>
+      <ng-template #nzTitle>
+        <h4 style="font-size: 32px; font-weight: lighter; text-align: center">Oops ... Can't get user data</h4>
+      </ng-template>
+      <ng-template #nzSubTitle>
+        <p style="font-size: 18px; font-weight: lighter; text-align: center">
+          {{getUserAlert?.message}}
+        </p>
+      </ng-template>
+    </nz-result>
+  </nz-card>
+</div>

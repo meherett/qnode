@@ -1,0 +1,28 @@
+@import (multiple) "../../../node_modules/ng-zorro-antd/src/style/themes/default";
+@import "./base";
+
+@layout-sider-background: @white;
+@layout-trigger-background: @white;
+@layout-header-background: @white;
+
+@particle-js-background: rgb(240,242,245);
+@particle-js-background-gradient: linear-gradient(0deg, rgba(240,242,245,1) 0%, rgba(240,242,245,1) 50%, rgba(255,255,255,0) 100%);
+@home-bg-gradient: radial-gradient(circle, rgba(240,242,245,1) 25%, rgba(240,242,245,0) 100%);
+
+:host {
+  .ant-menu-item, #qnode-logo {
+    color: @black;
+  }
+
+  #home-dashboard-navbar {
+    border-bottom: 0;
+    border-top: 0;
+    box-shadow: 0 2px 4px rgba(0, 21, 41, .08);
+  }
+
+  .ant-menu-horizontal {
+    border-bottom: 0;
+    border-top: 0;
+    box-shadow: none;
+  }
+}

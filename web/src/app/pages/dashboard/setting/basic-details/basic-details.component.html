@@ -1,0 +1,40 @@
+<nz-alert nzShowIcon nzCloseable *ngIf="basicDetailAlert" [nzType]="basicDetailAlert.type" [nzMessage]="basicDetailAlert.message" style="margin-bottom: 20px" (nzOnClose)="basicDetailAlert = null"></nz-alert>
+<form nz-form [formGroup]="formGroup" nzLayout="vertical"
+      (ngSubmit)="update(this.storageService.getStorage('user_id'), formGroup.value)">
+  <nz-form-item [ngStyle]="{ 'margin-bottom' : formGroup.get('email')?.dirty ? formGroup.get('email')?.invalid ? '0px' : '8px' : '8px' }">
+    <nz-form-label nzRequired>Email Address</nz-form-label>
+    <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipEmail">
+      <input nz-input nzSize="large" type="email" formControlName="email">
+      <ng-template #nzErrorTipEmail let-control>
+        <ng-container *ngIf="control.errors?.required">Email address is required.</ng-container>
+        <ng-container *ngIf="control.errors?.email">Wrong email address.</ng-container>
+        <ng-container *ngIf="control.errors?.is_registered">That email address is already exist.</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzRequired>Password</nz-form-label>
+    <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipPassword">
+      <nz-input-group nzSize="large" [nzSuffix]="suffixPassword">
+        <input nz-input nzSize="large" [type]="passwordVisible ? 'text' : 'password'" formControlName="password">
+      </nz-input-group>
+      <ng-template #suffixPassword>
+        <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" (click)="passwordVisible = !passwordVisible"></i>
+      </ng-template>
+      <ng-template #nzErrorTipPassword let-control>
+        <ng-container *ngIf="control.errors?.required">Password is required.</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item style="margin-bottom: 0">
+    <nz-form-control>
+      <div class="actions-end">
+        <button nz-button type="button" (click)="clear()" nzType="default" style="margin-right: 15px">
+          <i nz-icon nzType="clear" nzTheme="outline"></i>
+        </button>
+        <button nz-button type="submit" [nzLoading]="nzLoading"
+                nzType="primary">SAVE</button>
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+</form>

@@ -1,0 +1,21 @@
+<div id="error" [ngStyle]="{'min-height': screenHeight + 'px'}">
+  <nz-result id="error-content" [nzIcon]="nzIcon404" [nzTitle]="nzTitle" [nzSubTitle]="nzSubTitle" style="background: transparent">
+    <div nz-result-extra>
+      <button nz-button *ngIf="!this.storageService.getStorage('accessToken')" nzType="primary" routerLink="/" style="margin-right: 16px">BACK TO HOME</button>
+      <button nz-button *ngIf="this.storageService.getStorage('accessToken')" nzType="primary" routerLink="/dashboard">BACK TO DASHBOARD</button>
+    </div>
+    <ng-template #nzIcon404>
+      <h1 style="font-size: 54px;">QNode</h1>
+    </ng-template>
+    <ng-template #nzTitle>
+      <h4 style="font-size: 32px; font-weight: lighter; text-align: center">
+        Page Not Found!
+      </h4>
+    </ng-template>
+    <ng-template #nzSubTitle>
+      <p style="font-size: 18px; font-weight: lighter; text-align: center">
+        Sorry, the page you visited does not exist.
+      </p>
+    </ng-template>
+  </nz-result>
+</div>

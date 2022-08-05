@@ -1,0 +1,94 @@
+<nz-modal nzCentered [(nzVisible)]="isDisableVisible" nzTitle="DISABLE TWO-FACTOR AUTHENTICATION" (nzOnCancel)="handleDisableCancel()">
+  <ng-container *nzModalContent>
+    <nz-alert nzShowIcon nzCloseable *ngIf="disable2FAAlert" [nzType]="disable2FAAlert.type" [nzMessage]="disable2FAAlert.message" style="margin-bottom: 20px" (nzOnClose)="disable2FAAlert = null"></nz-alert>
+    <form nz-form [formGroup]="formGroupDisable" nzLayout="vertical">
+      <nz-form-item style="margin-bottom: 0">
+        <nz-form-label nzRequired style="margin-top: 0">Verify OTP</nz-form-label>
+        <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipOTP">
+          <input nz-input nzSize="large" type="number" formControlName="otp">
+          <ng-template #nzErrorTipOTP let-control>
+            <ng-container *ngIf="control.errors?.required">OTP is required.</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </form>
+  </ng-container>
+  <ng-container *nzModalFooter>
+    <button nz-button type="button" nzType="default" (click)="handleDisableCancel()" style="margin: 0;">CANCEL</button>
+    <button nz-button type="button" (click)="clearDisable()" nzType="default" style="margin: 0 16px">
+      <i nz-icon nzType="clear" nzTheme="outline"></i>
+    </button>
+    <button nz-button type="submit" nzType="primary" style="margin: 0;" [nzLoading]="nzLoadingDisable" (click)="disable2FA(formGroupDisable.value)">SUBMIT</button>
+  </ng-container>
+</nz-modal>
+
+<nz-collapse [nzGhost]="false">
+  <nz-collapse-panel *ngIf="userResponseInterface" [nzShowArrow]="false" [nzHeader]="nzHeaderCollapse"
+   [nzActive]="userResponseInterface?.data?.qr_2fa !== undefined"
+   [nzDisabled]="(userResponseInterface?.data?.qr_2fa === undefined || nzDisabledGenerate || userResponseInterface.data?.['2fa']?.is_enabled)">
+
+    <div *ngIf="!userResponseInterface?.data?.qr_2fa" style="display: flex; width: 100%; height: 300px; justify-content: center; align-items: center">
+      <nz-spin nzSimple nzSize="large" [nzSpinning]="nzLoadingGenerate"></nz-spin>
+    </div>
+
+    <div *ngIf="userResponseInterface?.data?.qr_2fa">
+      <div nz-row [nzGutter]="16" style="display: flex; flex-flow: row" nzJustify="center" nzAlign="middle">
+        <div nz-col nzFlex="150px">
+          <nz-card nzSize="small" style="padding: 0">
+            <qr-code [size]="150" [value]="userResponseInterface?.data?.qr_2fa.otp_uri"></qr-code>
+          </nz-card>
+        </div>
+        <div nz-col nzFlex="auto">
+          <h3 style="font-size: 18px; font-weight: lighter;">
+            <i nz-icon nzType="warning" nzTheme="outline" style="color: red"></i> Save your backup code
+          </h3>
+          <p style="margin: 0">If you ever lose access to your device, you can use this code to verify your identity.</p>
+        </div>
+      </div>
+      <div style="display: flex; flex-flow: row; margin-top: 16px">
+        <nz-alert nzType="info" [nzCloseable]="false" [nzMessage]="userResponseInterface?.data?.qr_2fa.otp" style="width: 100%;"></nz-alert>
+        <button nz-button nzSize="large" type="button" style="margin: auto 0 auto 16px"
+                (click)="copy(userResponseInterface?.data?.qr_2fa.otp)" nzType="default">
+          <i nz-icon nzType="copy" nzTheme="outline"></i>
+        </button>
+      </div>
+
+      <nz-divider style="margin-bottom: 8px"></nz-divider>
+
+      <nz-alert nzShowIcon nzCloseable *ngIf="enable2FAAlert" [nzType]="enable2FAAlert.type" [nzMessage]="enable2FAAlert.message" style="margin: 16px 0 8px 0" (nzOnClose)="enable2FAAlert = null"></nz-alert>
+      <form nz-form [formGroup]="formGroupEnable" nzLayout="vertical" (ngSubmit)="enable2FA(formGroupEnable.value)">
+        <nz-form-item>
+          <nz-form-label nzRequired style="margin-top: 0">Verify OTP</nz-form-label>
+          <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipOTP">
+            <input nz-input nzSize="large" type="number" formControlName="otp">
+            <ng-template #nzErrorTipOTP let-control>
+              <ng-container *ngIf="control.errors?.required">OTP is required.</ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item style="margin-bottom: 0">
+          <nz-form-control>
+            <div class="actions-end">
+              <button nz-button type="button" (click)="clearEnable()" nzType="default" style="margin-right: 15px">
+                <i nz-icon nzType="clear" nzTheme="outline"></i>
+              </button>
+              <button nz-button type="submit" [nzLoading]="nzLoadingEnable"
+                      nzType="primary">SUBMIT</button>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </div>
+  </nz-collapse-panel>
+</nz-collapse>
+<ng-template #nzHeaderCollapse>
+  <div style="display: flex; flex-flow: row;" *ngIf="!userResponseInterface.data?.['2fa']?.is_enabled">
+    <button nz-button nzSize="large" nzType="primary" [nzLoading]="nzLoadingGenerate" (click)="generate2FA()">ENABLE</button>
+    <h3 style="font-size: 18px; font-weight: lighter; margin: auto 0 auto 16px">TWO-FACTOR AUTHENTICATION</h3>
+  </div>
+  <div style="display: flex; flex-flow: row;" *ngIf="userResponseInterface.data?.['2fa']?.is_enabled">
+    <button nz-button nzType="primary" (click)="showDisableModal()">DISABLE</button>
+    <h3 style="font-size: 18px; font-weight: lighter; margin: auto 0 auto 16px">TWO-FACTOR AUTHENTICATION</h3>
+  </div>
+</ng-template>
+<p style="margin-top: 16px; margin-bottom: 0;">We all know the benefits of 2FA so please go ahead and enable it.</p>

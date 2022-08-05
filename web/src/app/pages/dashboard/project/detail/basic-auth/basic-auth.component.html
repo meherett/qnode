@@ -1,0 +1,69 @@
+<nz-alert nzShowIcon nzCloseable *ngIf="basicAuthAlert" [nzType]="basicAuthAlert.type" [nzMessage]="basicAuthAlert.message" style="margin-bottom: 20px" (nzOnClose)="basicAuthAlert = null"></nz-alert>
+<form nz-form [formGroup]="formGroup" nzLayout="vertical"
+      (ngSubmit)="addBasicAuth(this.projectResponseInterface?.data?._id?.$oid, formGroup.value)">
+  <div nz-row nzGutter="16">
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label nzRequired>Username</nz-form-label>
+        <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipUsername">
+          <input nz-input nzSize="large" type="text" formControlName="username">
+          <ng-template #nzErrorTipUsername let-control>
+            <ng-container *ngIf="control.errors?.required">Username is required.</ng-container>
+            <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 100.</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+    <div nz-col nzSpan="12">
+      <nz-form-item>
+        <nz-form-label nzRequired>Password</nz-form-label>
+        <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipPassword">
+          <nz-input-group nzSize="large" [nzSuffix]="suffixPassword">
+            <input nz-input nzSize="large" [type]="passwordVisible ? 'text' : 'password'" formControlName="password">
+          </nz-input-group>
+          <ng-template #suffixPassword>
+            <i nz-icon [nzType]="passwordVisible ? 'eye-invisible' : 'eye'" (click)="passwordVisible = !passwordVisible"></i>
+          </ng-template>
+          <ng-template #nzErrorTipPassword let-control>
+            <ng-container *ngIf="control.errors?.required">Password is required.</ng-container>
+            <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 100.</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+    </div>
+  </div>
+  <nz-form-item>
+    <nz-form-control>
+      <div class="actions-end">
+        <button nz-button type="button" (click)="clear()" nzType="default" style="margin-right: 15px">
+          <i nz-icon nzType="clear" nzTheme="outline"></i>
+        </button>
+        <button nz-button type="submit" [nzLoading]="nzLoadingAdd" [disabled]="false" nzType="primary">ADD</button>
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+</form>
+
+<nz-divider></nz-divider>
+
+<nz-spin nzSize="large" [nzSpinning]="nzLoadingAdd || nzLoadingRemove">
+  <nz-table #basic_auth nzBordered [nzData]="projectResponseInterface?.data?.security?.basic_auths" [nzShowPagination]="true" [nzPageSize]="5">
+    <thead>
+      <tr>
+        <th nzAlign="left">Basic Authentication</th>
+        <th nzAlign="center">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let data of basic_auth.data">
+        <td nzBreakWord nzAlign="left">
+          <b>Username:</b> {{ data.username }} <br/>
+          <b>MD5 Hash:</b> {{ data.password }} <br/>
+        </td>
+        <td nzAlign="center">
+          <button nz-button nzSize="default" type="button" (click)="removeBasicAuth(this.projectResponseInterface?.data?._id?.$oid, data.username)" nzType="default">REMOVE</button>
+        </td>
+      </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>

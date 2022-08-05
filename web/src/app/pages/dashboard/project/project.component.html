@@ -1,0 +1,147 @@
+<div *ngIf="!projectCollectionResponseInterface && nzSpinning" style="display: flex; width: 100%; height: 75vh; justify-content: center; align-items: center">
+  <nz-spin nzSimple nzSize="large" [nzSpinning]="nzSpinning"></nz-spin>
+</div>
+
+<div *ngIf="projectCollectionResponseInterface && !nzSpinning">
+  <nz-spin [nzSpinning]="nzLoadingEmailConfirmation">
+    <nz-alert *ngIf="!this.storageService.getJSONStorage('is_confirmed')" nzType="info" [nzMessage]="nzMessage" nzShowIcon [nzCloseable]="false">
+      <ng-template #nzMessage>
+        <div nz-row style="width: 100%;">
+          <div nz-col nzFlex="auto" style="margin-top: 3px">Please confirm your email address</div>
+          <div nz-col nzFlex="200px">
+            <button nz-button nzSize="default" nzType="link" style="right: 0" (click)="sendEmailConfirmation()">SEND EMAIL CONFIRMATION</button>
+          </div>
+        </div>
+      </ng-template>
+    </nz-alert>
+  </nz-spin>
+
+  <nz-page-header style="padding-left: 0; padding-right: 0;">
+    <nz-page-header-title>All Projects</nz-page-header-title>
+    <nz-page-header-subtitle style="font-size: 16px; margin-top: 4px">
+      {{this.storageService.getStorage('email')}}
+    </nz-page-header-subtitle>
+    <!--  <nz-page-header-tags>-->
+    <!--    <nz-tag nzColor="blue">Runing</nz-tag>-->
+    <!--  </nz-page-header-tags>-->
+    <nz-page-header-extra>
+      <nz-modal nzCentered [(nzVisible)]="isVisible" nzTitle="CREATE NEW PROJECT" (nzOnCancel)="handleCancel()">
+        <ng-container *nzModalContent>
+          <nz-alert nzShowIcon nzCloseable *ngIf="newProjectAlert" [nzType]="newProjectAlert.type" [nzMessage]="newProjectAlert.message" style="margin-bottom: 20px" (nzOnClose)="newProjectAlert = null"></nz-alert>
+          <form nz-form [formGroup]="formGroup" nzLayout="vertical"
+                (ngSubmit)="create(formGroup.value)">
+            <nz-form-item [ngStyle]="{ 'margin-bottom' : formGroup.get('name')?.dirty ? formGroup.get('name')?.invalid ? '0px' : '8px' : '8px' }">
+              <nz-form-label nzRequired>Project Name</nz-form-label>
+              <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipName">
+                <input nz-input nzSize="large" type="text" formControlName="name">
+                <ng-template #nzErrorTipName let-control>
+                  <ng-container *ngIf="control.errors?.required">Project name is required.</ng-container>
+                  <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 30.</ng-container>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label>Project Description</nz-form-label>
+              <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipDescription">
+                <textarea nz-input nzSize="large" type="text" rows="7" formControlName="description"></textarea>
+                <ng-template #nzErrorTipDescription let-control>
+                  <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 300.</ng-container>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </form>
+        </ng-container>
+        <ng-container *nzModalFooter>
+          <button nz-button type="button" nzType="default" (click)="handleCancel()">CANCEL</button>
+          <button nz-button type="button" nzType="default" (click)="clear()">
+            <i nz-icon nzType="clear" nzTheme="outline"></i>
+          </button>
+          <button nz-button type="submit" nzType="primary"  [nzLoading]="nzLoading"
+                  (click)="create(formGroup.value)">CREATE</button>
+        </ng-container>
+      </nz-modal>
+      <button nz-button nzType="primary" (click)="showModal()" style="margin: 0">
+        <i nz-icon nzType="plus" nzTheme="outline"></i> CREATE NEW PROJECT
+      </button>
+    </nz-page-header-extra>
+    <nz-page-header-content>
+      <!--    <nz-row nzType="flex">-->
+      <!--      <nz-statistic nzTitle="Status" nzValue="Pending"></nz-statistic>-->
+      <!--      <nz-statistic nzTitle="Price" [nzValue]="568.08" nzPrefix="$" style="margin: 0 32px"></nz-statistic>-->
+      <!--      <nz-statistic nzTitle="Balance" [nzValue]="3345.08" nzPrefix="$"></nz-statistic>-->
+      <!--    </nz-row>-->
+    </nz-page-header-content>
+    <!--  <nz-breadcrumb nz-page-header-breadcrumb>-->
+    <!--    <nz-breadcrumb-item>QNode</nz-breadcrumb-item>-->
+    <!--    <nz-breadcrumb-item><a routerLink="/dashboard/project">Project</a></nz-breadcrumb-item>-->
+    <!--  </nz-breadcrumb>-->
+  </nz-page-header>
+
+
+  <nz-list style="min-height: 473px;" [nzDataSource]="projectCollectionResponseInterface?.data?.data" [nzRenderItem]="item" [nzGrid]="{ gutter: 24, lg: 12, md: 12, sm: 24, xs: 24 }">
+    <ng-template #item let-item>
+      <nz-list-item routerLink="/dashboard/stats/{{item.key}}" [queryParams]="{network: 'all_networks'}">
+        <nz-ribbon [nzText]="nzText" [nzColor]="item.status === 'active' ? 'green' : 'red'">
+          <ng-template #nzText>
+            <p style="color: white">{{ item.status | uppercase }}</p>
+          </ng-template>
+          <nz-card nzHoverable *ngIf="item !== null" [nzActions]="[nzActions]">
+            <ng-template #nzActions>
+              <div nz-row style="margin: 0 16px">
+                <div nz-col nzFlex="auto" style="text-align: center;">
+                  <a><nz-tag nzColor="#52c41a">{{item.today_statistics.total_valid | shortNumbers}}</nz-tag>TODAY REQUESTS</a>
+                </div>
+                <div nz-col nzFlex="16px" style="text-align: center;">
+                  <nz-divider nzType="vertical" style="height: 100%"></nz-divider>
+                </div>
+                <div nz-col nzFlex="auto" style="text-align: center;">
+                  <a><nz-tag nzColor="#f5222d">{{item.today_statistics.total_invalid | shortNumbers}}</nz-tag>TODAY INVALID REQUESTS</a>
+                </div>
+                <div nz-col nzFlex="16px" style="text-align: center;">
+                  <nz-divider nzType="vertical" style="height: 100%"></nz-divider>
+                </div>
+                <div nz-col nzFlex="auto" style="text-align: center;">
+                  <a routerLink="/dashboard/project/{{item.key}}"><i nz-icon nzType="setting"></i> SETTING</a>
+                </div>
+              </div>
+            </ng-template>
+            <nz-card-meta [nzTitle]="nzTitle" [nzDescription]="nzDescription">
+              <ng-template #nzTitle>
+                <a>{{ item.name }}</a>
+              </ng-template>
+              <ng-template #nzDescription>
+                <div style="width: 100%; height: 50px" ellipsis [ellipsis-content]="item.description"></div>
+                <!--                <p>{{ item.description }}</p>-->
+                <p style="margin: 16px 0 0 0;">Created {{item?.date_created?.$date | date}}</p>
+              </ng-template>
+            </nz-card-meta>
+          </nz-card>
+        </nz-ribbon>
+      </nz-list-item>
+    </ng-template>
+  </nz-list>
+  <nz-pagination nzSize="default" style="margin-top: 8px" (nzPageIndexChange)="collection($event)"
+                 [nzPageIndex]="projectCollectionResponseInterface?.data?.page"
+                 [nzPageSize]="projectCollectionResponseInterface?.data?.limit"
+                 [nzTotal]="projectCollectionResponseInterface?.data?.total"></nz-pagination>
+</div>
+<div *ngIf="!projectCollectionResponseInterface && !nzSpinning" style="display: flex; width: 100%; height: 100%; justify-content: center; align-items: center;">
+  <nz-card nzHoverable>
+    <nz-result [nzIcon]="nzIcon404" [nzTitle]="nzTitle" [nzSubTitle]="nzSubTitle">
+      <div nz-result-extra>
+        <button nz-button nzType="primary" (click)="reload()">RELOAD</button>
+      </div>
+      <ng-template #nzIcon404>
+        <i nz-icon nzType="close-circle" style="color: #f5222d" nzTheme="fill"></i>
+      </ng-template>
+      <ng-template #nzTitle>
+        <h4 style="font-size: 32px; font-weight: lighter; text-align: center">Oops ... Can't get project collections</h4>
+      </ng-template>
+      <ng-template #nzSubTitle>
+        <p style="font-size: 18px; font-weight: lighter; text-align: center">
+          {{projectCollectionAlert?.message}}
+        </p>
+      </ng-template>
+    </nz-result>
+  </nz-card>
+</div>

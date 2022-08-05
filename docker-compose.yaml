@@ -1,0 +1,109 @@
+version: "3.3"
+
+networks:
+  qnode-network:
+    driver: bridge
+
+volumes:
+  mainnet-volume:
+  testnet-volume:
+
+services:
+  qnode-web:
+    image: meherett/qnode-web:latest
+    container_name: qnode-web
+    restart: always
+    expose:
+      - 9090
+    networks:
+      - qnode-network
+    depends_on:
+      - qnode-api
+
+  qnode-api:
+    image: meherett/qnode-api:latest
+    container_name: qnode-api
+    restart: always
+    expose:
+      - 8080
+    environment:
+      - TOKEN_EXPIRY_TIMESTAMP=3600
+    command: --bind 0.0.0.0:8080 --workers 4 --threads 1000 wsgi:flask
+    networks:
+      - qnode-network
+    depends_on:
+      - janus-mainnet
+      - janus-testnet
+
+  janus-mainnet:
+    image: ripply/janus:latest
+    container_name: janus-mainnet
+    restart: always
+    expose:
+      - 23890
+    environment:
+      - QTUM_RPC=http://qtum:testpasswd@qtum-mainnet:3890
+    command: --bind 0.0.0.0 --port 23890 --log-file /logs/janus-mainnet-logs.txt --dev --https-key /https/key.pem --https-cert /https/cert.pem
+    networks:
+      - qnode-network
+    volumes:
+      - mainnet-volume:/https
+      - mainnet-volume:/logs
+    depends_on:
+      - qtum-mainnet
+
+  janus-testnet:
+    image: ripply/janus:latest
+    container_name: janus-testnet
+    restart: always
+    expose:
+      - 23889
+    environment:
+        - QTUM_RPC=http://qtum:testpasswd@qtum-testnet:3889
+    command: --bind 0.0.0.0 --port 23889 --log-file /logs/janus-testnet-logs.txt --dev --https-key /https/key.pem --https-cert /https/cert.pem
+    networks:
+      - qnode-network
+    volumes:
+      - testnet-volume:/https
+      - testnet-volume:/logs
+    depends_on:
+      - qtum-testnet
+
+  qtum-mainnet:
+    image: qtum/qtum:latest
+    container_name: qtum-mainnet
+    restart: always
+    expose:
+      - 3890
+    environment:
+      - COMPOSE_PROJECT_NAME=mainnet
+    command: qtumd -txindex -addrindex=1 -rpcbind=0.0.0.0:3890 -rpcallowip=0.0.0.0/0 -logevents -rpcuser=qtum -rpcpassword=testpasswd -deprecatedrpc=accounts -printtoconsole
+    networks:
+      - qnode-network
+    volumes:
+      - mainnet-volume:/root/.qtum
+
+  qtum-testnet:
+    image: qtum/qtum:latest
+    container_name: qtum-testnet
+    restart: always
+    expose:
+      - 3889
+    command: qtumd -testnet -txindex -addrindex=1 -rpcbind=0.0.0.0:3889 -rpcallowip=0.0.0.0/0 -logevents -rpcuser=qtum -rpcpassword=testpasswd -deprecatedrpc=accounts -printtoconsole
+    networks:
+      - qnode-network
+    volumes:
+      - testnet-volume:/root/.qtum
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    networks:
+      - qnode-network
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - qnode-web

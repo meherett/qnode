@@ -1,0 +1,63 @@
+@import "mixin";
+
+.themeMixin({
+  :host {
+    #home-navbar.navbar-add-background {
+      background: @layout-header-background;
+      box-shadow: 0 2px 4px rgba(0,21,41,.08);
+      transition: background 200ms linear;
+    }
+
+    #home-navbar.navbar-add-transparent {
+      background: transparent;
+      transition: background 200ms linear;
+    }
+
+    #theme-bg {
+      background: @layout-header-background;
+    }
+  }
+});
+
+#home-navbar {
+  position: relative;
+  height: 64px;
+  padding: 0 24px;
+  width: 100%;
+
+  #home-navbar-left {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    margin: auto 0;
+
+    .home-navbar-trigger {
+      font-size: 20px;
+      transition: all .3s,padding 0s;
+
+      .trigger:hover {
+        color: #049ee8;
+      }
+    }
+
+    .home-navbar-title {
+      margin: 0 20px 0 20px;
+      font-size: 16px;
+      font-weight: normal;
+    }
+  }
+
+  #home-navbar-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto 0;
+  }
+
+  #home-navbar-right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin: auto 0;
+  }
+}

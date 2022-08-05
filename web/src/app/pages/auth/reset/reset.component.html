@@ -1,0 +1,78 @@
+<div class="main-div">
+  <div class="child-div">
+    <div class="h5">
+      <h5>RESET</h5>
+    </div>
+    <nz-card nzHoverable>
+      <nz-alert nzShowIcon nzCloseable *ngIf="resetAlert" [nzType]="resetAlert.type" [nzMessage]="resetAlert.message" style="margin-bottom: 20px" (nzOnClose)="resetAlert = null"></nz-alert>
+      <form nz-form [formGroup]="formGroup" nzLayout="vertical"
+            (ngSubmit)="reset(formGroup.value)">
+        <nz-form-item [ngStyle]="{ 'margin-bottom' : formGroup.get('new_password')?.dirty ? formGroup.get('new_password')?.invalid ? '0px' : '8px' : '8px' }">
+          <nz-form-label nzRequired>New Password</nz-form-label>
+          <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipNewPassword">
+            <nz-input-group nz-popover nzSize="large" [nzSuffix]="suffixNewPassword" nzPopoverPlacement="left" nzPopoverTrigger="focus" [(nzPopoverVisible)]="visible"
+                            nzPopoverOverlayClassName="register-password-cdk" [nzPopoverOverlayStyle]="{ 'width.px': 240 }" [nzPopoverContent]="nzPopoverContentNewPassword">
+              <input nz-input [type]="newPasswordVisible ? 'text' : 'password'" formControlName="new_password"/>
+            </nz-input-group>
+            <ng-template #suffixNewPassword>
+              <i nz-icon [nzType]="newPasswordVisible ? 'eye-invisible' : 'eye'" (click)="newPasswordVisible = !newPasswordVisible"></i>
+            </ng-template>
+            <ng-template #nzPopoverContentNewPassword>
+              <div style="padding: 4px 0">
+                <ng-container [ngSwitch]="status">
+                  <div *ngSwitchCase="'ok'" class="success">Strength - Strong</div>
+                  <div *ngSwitchCase="'pass'" class="warning">Strength - Medium</div>
+                  <div *ngSwitchDefault class="error">Strength - Short</div>
+                </ng-container>
+                <div class="progress-{{ status }}">
+                  <nz-progress
+                    [nzPercent]="progress"
+                    [nzStatus]="passwordProgressMap[status]"
+                    [nzStrokeWidth]="6"
+                    [nzShowInfo]="false"
+                  ></nz-progress>
+                </div>
+                <p class="mt-sm">Don't use passwords that are easy to guess.</p>
+              </div>
+            </ng-template>
+            <ng-template #nzErrorTipNewPassword let-control>
+              <ng-container *ngIf="control.errors?.required">Password is required.</ng-container>
+              <ng-container *ngIf="control.errors?.minlength">Minimum length must be 8.</ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label nzRequired>Confirm Password</nz-form-label>
+          <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipConfirmPassword">
+            <nz-input-group nzSize="large">
+              <input nz-input type="password" formControlName="confirm_password"/>
+            </nz-input-group>
+            <ng-template #nzErrorTipConfirmPassword let-control>
+              <ng-container *ngIf="control.errors?.required">Confirm password is required.</ng-container>
+              <ng-container *ngIf="control.errors?.confirmed && !control.errors?.required">Password is inconsistent.</ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item style="margin-bottom: 0">
+          <nz-form-control>
+            <div class="actions-end">
+              <button nz-button type="button" (click)="clear()" nzType="default" style="margin-right: 15px">
+                <i nz-icon nzType="clear" nzTheme="outline"></i>
+              </button>
+              <button nz-button type="submit" [nzLoading]="nzLoading"
+                      nzType="primary">RESET</button>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-card>
+  </div>
+  <div class="passport-footer">
+    <div style="margin: 0; padding: 0;">
+      Create an account
+      <a routerLink="/register">here</a>.
+      <nz-divider nzType="vertical"></nz-divider>
+      <a routerLink="/login">Already have an account?</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,62 @@
+<nz-alert nzShowIcon nzCloseable *ngIf="jwtAuthAlert" [nzType]="jwtAuthAlert.type" [nzMessage]="jwtAuthAlert.message" style="margin-bottom: 20px" (nzOnClose)="jwtAuthAlert = null"></nz-alert>
+<form nz-form [formGroup]="formGroup" nzLayout="vertical"
+      (ngSubmit)="addJWTAuth(this.projectResponseInterface?.data?._id?.$oid, formGroup.value)">
+  <nz-form-item>
+    <nz-form-label nzRequired>Name</nz-form-label>
+    <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipName">
+      <input nz-input nzSize="large" type="text" formControlName="name">
+      <ng-template #nzErrorTipName let-control>
+        <ng-container *ngIf="control.errors?.required">Name is required.</ng-container>
+        <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 100.</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-label nzRequired>Public Key</nz-form-label>
+    <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipDescription">
+      <textarea nz-input nzSize="large" type="text" rows="5" formControlName="public_key" placeholder="-----BEGIN PUBLIC KEY-----
+
+
+
+-----END PUBLIC KEY-----"></textarea>
+      <ng-template #nzErrorTipDescription let-control>
+        <ng-container *ngIf="control.errors?.required">Public key is required.</ng-container>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+  <nz-form-item>
+    <nz-form-control>
+      <div class="actions-end">
+        <button nz-button type="button" (click)="clear()" nzType="default" style="margin-right: 15px">
+          <i nz-icon nzType="clear" nzTheme="outline"></i>
+        </button>
+        <button nz-button type="submit" [nzLoading]="nzLoadingAdd" [disabled]="false" nzType="primary">ADD</button>
+      </div>
+    </nz-form-control>
+  </nz-form-item>
+</form>
+
+<nz-divider></nz-divider>
+
+<nz-spin nzSize="large" [nzSpinning]="nzLoadingAdd || nzLoadingRemove">
+  <nz-table #jwt_auth nzBordered [nzData]="projectResponseInterface?.data?.security?.jwt_auths" [nzShowPagination]="true" [nzPageSize]="5">
+    <thead>
+    <tr>
+      <th nzAlign="left">JWT Authentication</th>
+      <th nzAlign="center">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let data of jwt_auth.data">
+      <td nzBreakWord nzAlign="left">
+        <b>Name:</b> {{ data.name }} <br/>
+        <b>Key:</b> {{ data.key }} <a><i nz-icon nzType="copy" nzTheme="outline" style="margin-left: 5px" (click)="copy(data.key, data.name)"></i></a> <br/>
+        <b>Fingerprint:</b> {{ data.fingerprint }}
+      </td>
+      <td nzAlign="center">
+        <button nz-button nzSize="default" type="button" (click)="removeJWTAuth(this.projectResponseInterface?.data?._id?.$oid, data.key)" nzType="default">REMOVE</button>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>

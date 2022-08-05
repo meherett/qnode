@@ -1,0 +1,170 @@
+<div *ngIf="!projectResponseInterface && nzLoadingGetProject" style="display: flex; width: 100%; height: 75vh; justify-content: center; align-items: center">
+  <nz-spin nzSimple nzSize="large" [nzSpinning]="nzLoadingGetProject"></nz-spin>
+</div>
+
+<div *ngIf="projectResponseInterface && !nzLoadingGetProject">
+  <nz-spin [nzSpinning]="nzLoadingEmailConfirmation">
+    <nz-alert *ngIf="!this.storageService.getJSONStorage('is_confirmed')" nzType="info" [nzMessage]="nzMessage" nzShowIcon [nzCloseable]="false">
+      <ng-template #nzMessage>
+        <div nz-row style="width: 100%;">
+          <div nz-col nzFlex="auto" style="margin-top: 3px">Please confirm your email address</div>
+          <div nz-col nzFlex="200px">
+            <button nz-button nzSize="default" nzType="link" style="right: 0" (click)="sendEmailConfirmation()">SEND EMAIL CONFIRMATION</button>
+          </div>
+        </div>
+      </ng-template>
+    </nz-alert>
+  </nz-spin>
+
+  <nz-page-header style="padding-left: 0; padding-right: 0;">
+    <nz-page-header-title>
+      {{projectResponseInterface?.data?.name}}
+    </nz-page-header-title>
+    <nz-page-header-subtitle style="font-size: 16px; margin-top: 4px">
+      Created {{projectResponseInterface?.data?.date_created?.$date | date}}
+    </nz-page-header-subtitle>
+    <nz-page-header-tags>
+      <nz-tag [nzColor]="projectResponseInterface?.data?.status === 'active' ? '#52c41a' : '#f5222d'">
+        {{projectResponseInterface?.data?.status | uppercase}}
+      </nz-tag>
+    </nz-page-header-tags>
+    <nz-page-header-extra>
+      <nz-modal nzCentered [(nzVisible)]="isVisible" nzTitle="EDIT PROJECT" (nzOnCancel)="handleCancel()">
+        <ng-container *nzModalContent>
+          <nz-alert nzShowIcon nzCloseable *ngIf="detailAlert" [nzType]="detailAlert.type" [nzMessage]="detailAlert.message" style="margin-bottom: 20px" (nzOnClose)="detailAlert = null"></nz-alert>
+          <form nz-form [formGroup]="formGroup" nzLayout="vertical"
+                (ngSubmit)="update(projectResponseInterface?.data?._id?.$oid, formGroup.value)">
+            <nz-form-item [ngStyle]="{ 'margin-bottom' : formGroup.get('name')?.dirty ? formGroup.get('name')?.invalid ? '0px' : '8px' : '8px' }">
+              <nz-form-label nzRequired>Project Name</nz-form-label>
+              <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipName">
+                <input nz-input nzSize="large" type="text" formControlName="name">
+                <ng-template #nzErrorTipName let-control>
+                  <ng-container *ngIf="control.errors?.required">Project name is required.</ng-container>
+                  <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 30.</ng-container>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+            <nz-form-item>
+              <nz-form-label>Project Description</nz-form-label>
+              <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipDescription">
+                <textarea nz-input nzSize="large" type="email" rows="7" formControlName="description"></textarea>
+                <ng-template #nzErrorTipDescription let-control>
+                  <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 300.</ng-container>
+                </ng-template>
+              </nz-form-control>
+            </nz-form-item>
+          </form>
+        </ng-container>
+        <ng-container *nzModalFooter>
+          <button nz-button type="button" nzType="default" (click)="handleCancel()">CANCEL</button>
+          <button nz-button type="button" nzType="default" (click)="clear()">
+            <i nz-icon nzType="clear" nzTheme="outline"></i>
+          </button>
+          <button nz-button type="submit" nzType="primary"  [nzLoading]="nzLoading"
+                  (click)="update(projectResponseInterface?.data?._id?.$oid, formGroup.value)">UPDATE</button>
+        </ng-container>
+      </nz-modal>
+      <nz-modal nzCentered [(nzVisible)]="isDeleteVisible" nzTitle="DELETE PROJECT" (nzOnCancel)="handleDeleteCancel()">
+        <ng-container *nzModalContent>
+          <nz-alert nzShowIcon nzCloseable *ngIf="detailDeleteAlert" [nzType]="detailDeleteAlert.type" [nzMessage]="detailDeleteAlert.message" style="margin-bottom: 20px" (nzOnClose)="detailDeleteAlert = null"></nz-alert>
+          <p>Any applications using this project’s keys will no longer be able to access the QNode API. This can not be undone.</p>
+        </ng-container>
+        <ng-container *nzModalFooter>
+          <button nz-button type="button" nzType="default" (click)="handleDeleteCancel()">CANCEL</button>
+          <button nz-button type="submit" nzType="primary"  [nzLoading]="nzLoadingDelete"
+                  (click)="delete(projectResponseInterface?.data?._id?.$oid)">DELETE</button>
+        </ng-container>
+      </nz-modal>
+      <button nz-button nzType="primary" (click)="showModal()">
+        <i nz-icon nzType="edit" nzTheme="outline"></i> EDIT PROJECT
+      </button>
+      <button nz-button nzType="default" (click)="showDeleteModal()">
+        <i nz-icon nzType="delete" nzTheme="outline"></i> DELETE PROJECT
+      </button>
+    </nz-page-header-extra>
+    <nz-page-header-content>
+      <div nz-row *ngIf="projectResponseInterface?.data?.description">
+        <div nz-col nzSpan="16" style="overflow-wrap: break-word; word-wrap: break-word; hyphens: auto;">
+          <div>{{projectResponseInterface?.data?.description}}</div>
+        </div>
+        <div nz-col nzSpan="8"></div>
+      </div>
+    </nz-page-header-content>
+  </nz-page-header>
+
+  <h3 style="font-size: 18px; font-weight: lighter; margin: 16px 0">ENDPOINTS</h3>
+
+  <nz-card nzHoverable [nzBordered]="false" [nzTitle]="nzTitleEndpoints" style="margin-bottom: 16px" [nzExtra]="nzExtraEndpoints">
+    <ng-template #nzTitleEndpoints>
+      <!--    <div style="font-size: 16px">PROJECT KEY <strong>·</strong> {{projectResponseInterface?.data?.key}}</div>-->
+      PROJECT KEY <nz-tag style="margin-left: 10px; font-size: 16px" nzColor="blue">{{projectResponseInterface?.data?.key}}</nz-tag>
+      <i *ngIf="!nzLoading" nz-icon nzType="copy" nzTheme="outline" style="margin-left: 3px" (click)="copy(projectResponseInterface?.data?.key, null, 'project_key')"></i>
+    </ng-template>
+    <ng-template #nzExtraEndpoints>
+      NETWORK
+      <nz-select [(ngModel)]="selected.value" (ngModelChange)="change_network($event)"
+                 nzSize="large" nzPlaceHolder="Networks" style="width: 125px; margin-left: 10px;">
+        <nz-option *ngFor="let option of options" [nzLabel]="option.label" [nzValue]="option.value"></nz-option>
+      </nz-select>
+    </ng-template>
+    <h3 style="font-size: 16px; font-weight: lighter;">{{selected.label}} NETWORK</h3>
+    <h3 style="font-size: 16px;">http://{{selected.value}}.qnode.meherett.com/{{projectResponseInterface?.data?.key}}
+      <i *ngIf="!nzLoading" nz-icon nzType="copy" nzTheme="outline" style="margin-left: 5px" (click)="copy(projectResponseInterface?.data?.key, selected.value, 'http')"></i></h3>
+    <h3 style="font-size: 16px;">ws://{{selected.value}}.qnode.meherett.com/{{projectResponseInterface?.data?.key}}
+      <i *ngIf="!nzLoading" nz-icon nzType="copy" nzTheme="outline" style="margin-left: 5px" (click)="copy(projectResponseInterface?.data?.key, selected.value, 'ws')"></i></h3>
+  </nz-card>
+
+  <nz-divider [nzText]="'SECURITY'" style="margin-top: 32px"></nz-divider>
+
+  <div nz-row nzGutter="24">
+    <div nz-col nzSpan="12">
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 16px 0">REQUESTS RATE-LIMITING</h3>
+      <nz-card nzHoverable [nzBordered]="false">
+        <app-requests [projectResponseInterface]="projectResponseInterface"></app-requests>
+      </nz-card>
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 16px 0">REQUIREMENTS</h3>
+      <nz-card nzHoverable [nzBordered]="false">
+        <app-basic-requirement [projectResponseInterface]="projectResponseInterface"></app-basic-requirement>
+        <nz-divider></nz-divider>
+        <app-basic-auth [projectResponseInterface]="projectResponseInterface"></app-basic-auth>
+      </nz-card>
+      <nz-card nzHoverable [nzBordered]="false" style="margin-top: 24px">
+        <app-jwt-requirement [projectResponseInterface]="projectResponseInterface"></app-jwt-requirement>
+        <nz-divider></nz-divider>
+        <app-jwt-auth [projectResponseInterface]="projectResponseInterface"></app-jwt-auth>
+      </nz-card>
+    </div>
+    <div nz-col nzSpan="12">
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 16px 0">ALLOWLISTS</h3>
+      <nz-card nzHoverable [nzBordered]="false">
+        <app-allowed-user-agent [projectResponseInterface]="projectResponseInterface"></app-allowed-user-agent>
+      </nz-card>
+      <nz-card nzHoverable [nzBordered]="false" style="margin-top: 32px">
+        <app-allowed-origin [projectResponseInterface]="projectResponseInterface"></app-allowed-origin>
+      </nz-card>
+      <nz-card nzHoverable [nzBordered]="false" style="margin-top: 32px">
+        <app-allowed-method [projectResponseInterface]="projectResponseInterface"></app-allowed-method>
+      </nz-card>
+    </div>
+  </div>
+</div>
+<div *ngIf="!projectResponseInterface && !nzLoadingGetProject" style="display: flex; width: 100%; height: 100%; justify-content: center; align-items: center;">
+    <nz-card nzHoverable>
+      <nz-result [nzIcon]="nzIcon404" [nzTitle]="nzTitle" [nzSubTitle]="nzSubTitle">
+        <div nz-result-extra>
+          <button nz-button nzType="primary" (click)="reload()">RELOAD</button>
+        </div>
+        <ng-template #nzIcon404>
+          <i nz-icon nzType="close-circle" style="color: #f5222d" nzTheme="fill"></i>
+        </ng-template>
+        <ng-template #nzTitle>
+          <h4 style="font-size: 32px; font-weight: lighter; text-align: center">Oops ... Can't get project detail</h4>
+        </ng-template>
+        <ng-template #nzSubTitle>
+          <p style="font-size: 18px; font-weight: lighter; text-align: center">
+            {{projectDetailAlert?.message}}
+          </p>
+        </ng-template>
+      </nz-result>
+    </nz-card>
+</div>

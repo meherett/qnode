@@ -1,0 +1,297 @@
+<div *ngIf="!projectListData && nzLoadingProjects" style="display: flex; width: 100%; height: 75vh; justify-content: center; align-items: center">
+  <nz-spin nzSimple nzSize="large" [nzSpinning]="nzLoadingProjects"></nz-spin>
+</div>
+
+<div *ngIf="projectListData && !nzLoadingProjects">
+  <nz-spin [nzSpinning]="nzSpinningEmailConfirmation">
+    <nz-alert *ngIf="!this.storageService.getJSONStorage('is_confirmed')" nzType="info" [nzMessage]="nzMessage" nzShowIcon [nzCloseable]="false">
+      <ng-template #nzMessage>
+        <div nz-row style="width: 100%;">
+          <div nz-col nzFlex="auto" style="margin-top: 3px">Please confirm your email address</div>
+          <div nz-col nzFlex="200px">
+            <button nz-button nzSize="default" nzType="link" style="right: 0" (click)="sendEmailConfirmation()">SEND EMAIL CONFIRMATION</button>
+          </div>
+        </div>
+      </ng-template>
+    </nz-alert>
+  </nz-spin>
+
+  <nz-page-header style="padding-left: 0; padding-right: 0;">
+    <nz-page-header-title>Statistics</nz-page-header-title>
+    <nz-page-header-subtitle style="font-size: 16px; margin-top: 4px">
+      {{selectedProjectData.value === 'all-projects' ? 'All Projects' : 'Project ' + selectedProjectData.value}}
+    </nz-page-header-subtitle>
+    <nz-page-header-tags>
+  <!--    <nz-tag style="margin-top: 10px; font-size: 16px" nzColor="blue">{{this.storageService.getStorage('email')}}</nz-tag>-->
+    </nz-page-header-tags>
+    <nz-page-header-extra>
+      RPC
+      <nz-select [ngModel]="'eth-rpc'" [nzSuffixIcon]="nzSuffixIconRPC"
+                 nzSize="large" nzPlaceHolder="RPC" style="width: 85px; margin-left: 10px; margin-right: 10px">
+        <nz-option nzLabel="ETH" nzValue="eth-rpc"></nz-option>
+        <nz-option nzDisabled nzLabel="QTUM" nzValue="qtum-rpc"></nz-option>
+      </nz-select>
+      <ng-template #nzSuffixIconRPC>
+        <svg class="svg-inline--fa fa-chart-network fa-w-20 mr-2" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" viewBox="0 0 640 512" role="img"><path fill="currentColor" d="M513.6 202.8l-19.2-25.6-48 36 19.2 25.6 48-36zM576 192c13.3 0 25.6-4 35.8-10.9 6.8-4.6 12.7-10.5 17.3-17.3C636 153.6 640 141.3 640 128c0-13.3-4-25.6-10.9-35.8-2.3-3.4-4.9-6.6-7.8-9.5-2.9-2.9-6.1-5.5-9.5-7.8C601.6 68 589.3 64 576 64s-25.6 4-35.8 10.9c-6.8 4.6-12.7 10.5-17.3 17.3C516 102.4 512 114.7 512 128c0 35.3 28.7 64 64 64zm0-96c17.6 0 32 14.4 32 32s-14.4 32-32 32-32-14.4-32-32 14.4-32 32-32zM99.8 250.9C89.6 244 77.3 240 64 240s-25.6 4-35.8 10.9c-6.8 4.6-12.7 10.5-17.3 17.3C4 278.4 0 290.7 0 304c0 35.3 28.7 64 64 64s64-28.7 64-64c0-13.3-4-25.6-10.9-35.8-4.6-6.8-10.5-12.7-17.3-17.3zM64 336c-17.6 0-32-14.4-32-32s14.4-32 32-32 32 14.4 32 32-14.4 32-32 32zm88-16h48v-32h-48v32zm469.3 82.7c-2.9-2.9-6.1-5.5-9.5-7.8C601.6 388 589.3 384 576 384s-25.6 4-35.8 10.9c-3.3 2.2-6.3 4.7-9.1 7.5l-91.8-55.1c5.6-13.3 8.7-28 8.7-43.3 0-61.9-50.1-112-112-112-11.3 0-21.9 2.2-32.2 5.2l-39.3-84.1C278.8 101.4 288 83.9 288 64c0-13.3-4-25.6-10.9-35.8-4.6-6.8-10.5-12.7-17.3-17.3C249.6 4 237.3 0 224 0s-25.6 4-35.8 10.9c-6.8 4.6-12.7 10.5-17.3 17.3C164 38.4 160 50.7 160 64c0 35.3 28.7 64 64 64 4 0 7.9-.5 11.7-1.2l39 83.6c-30.5 20-50.7 54.4-50.7 93.6 0 61.9 50.1 112 112 112 35 0 65.8-16.4 86.4-41.5l92.4 55.4c-1.7 5.8-2.7 11.8-2.7 18.1 0 35.3 28.7 64 64 64 13.3 0 25.6-4 35.8-10.9 6.8-4.6 12.7-10.5 17.3-17.3C636 473.6 640 461.3 640 448c0-13.3-4-25.6-10.9-35.8-2.3-3.4-5-6.6-7.8-9.5zM224 96c-17.6 0-32-14.4-32-32s14.4-32 32-32 32 14.4 32 32-14.4 32-32 32zm112 288c-44.1 0-80-35.9-80-80s35.9-80 80-80 80 35.9 80 80-35.9 80-80 80zm240 96c-17.6 0-32-14.4-32-32s14.4-32 32-32 32 14.4 32 32-14.4 32-32 32z"></path></svg>
+      </ng-template>
+      PROJECT
+      <nz-select [(ngModel)]="selectedProjectDataValue" (ngModelChange)="change_project($event)"
+                 nzSuffixIcon="key" nzSize="large" nzPlaceHolder="Project" style="width: 175px; margin-left: 10px; margin-right: 10px">
+        <nz-option *ngFor="let optionsProjectData of optionsProjectsData" [nzLabel]="optionsProjectData.label" [nzValue]="optionsProjectData.value"></nz-option>
+      </nz-select>
+      TIME-FRAME
+      <nz-select [(ngModel)]="selectedLast.value" (ngModelChange)="change_last($event)"
+                 nzSuffixIcon="calendar" nzSize="large" nzPlaceHolder="Last Time" style="width: 175px; margin-left: 10px">
+        <nz-option *ngFor="let optionLast of optionsLast" [nzLabel]="optionLast.label" [nzValue]="optionLast.value"></nz-option>
+      </nz-select>
+    </nz-page-header-extra>
+  </nz-page-header>
+
+  <div nz-row style="margin-bottom: 16px">
+    <div nz-col nzSpan="12" style="display: flex; align-items: center; justify-content: start;">
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 0;">TOTAL REQUESTS VOLUME</h3>
+    </div>
+    <div nz-col nzSpan="12" style="display: flex; align-items: center; justify-content: end;">
+      DETAIL
+      <nz-switch style="margin-left: 10px; margin-right: 10px" [(ngModel)]="switchRequestsVolumeDetail" (ngModelChange)="onSwitch()" [nzDisabled]="!requestsVolumeResponseInterface"></nz-switch>
+      <button nz-button type="button" (click)="getRequestsVolume(this.selectedProjectData.value, this.selectedLast.value)" nzType="default">
+        <i nz-icon nzType="reload" nzTheme="outline"></i>
+      </button>
+    </div>
+  </div>
+
+  <nz-spin nzSize="large" [nzSpinning]="nzSpinningRequestsVolume">
+    <nz-card nzHoverable [nzBordered]="false" style="min-height: 450px; width: 100%">
+      <div style="min-height: 400px; display: flex; align-items: center; justify-content: center;"
+           *ngIf="!requestsVolumeResponseInterface && requestsVolumeErrorMessage">
+        <nz-result [nzStatus]="requestsVolumeErrorMessage.type" [nzTitle]="requestsVolumeErrorMessage?.message"></nz-result>
+      </div>
+      <div style="height: 100%; width: 100%"
+           *ngIf="requestsVolumeChartConfigurationData && requestsVolumeResponseInterface && !requestsVolumeErrorMessage">
+        <div nz-row nzGutter="16">
+          <div nz-col>
+            <nz-statistic
+              [nzValue]="(requestsVolumeResponseInterface?.data?.total_volume | number)!"
+              [nzTitle]="'Total Volume'"
+              [nzPrefix]="prefixTplSwapRight"
+              [nzSuffix]="''"
+              [nzValueStyle]="{ color: '#0645f7' }"
+            ></nz-statistic>
+          </div>
+          <div nz-col>
+            <nz-statistic
+              [nzValue]="(requestsVolumeResponseInterface?.data?.total_valid_volume | number)!"
+              [nzTitle]="'Total Valid Volume'"
+              [nzPrefix]="prefixTplSwapRight"
+              [nzSuffix]="''"
+              [nzValueStyle]="{ color: '#52c41a' }"
+            ></nz-statistic>
+          </div>
+          <div nz-col>
+            <nz-statistic
+              [nzValue]="(requestsVolumeResponseInterface?.data?.total_invalid_volume | number)!"
+              [nzTitle]="'Total Invalid Volume'"
+              [nzPrefix]="prefixTplSwapRight"
+              [nzSuffix]="''"
+              [nzValueStyle]="{ color: '#f5222d' }"
+            ></nz-statistic>
+          </div>
+        </div>
+        <ng-template #prefixTplSwapRight><i nz-icon nzType="swap-right"></i></ng-template>
+        <canvas baseChart height="450" style="width: 100%"
+                [data]="requestsVolumeChartConfigurationData"
+                [options]="requestsVolumeChartConfigurationOptions"
+                [type]="requestsVolumeChartType"></canvas>
+      </div>
+    </nz-card>
+  </nz-spin>
+
+  <div nz-row style="margin: 16px 0">
+    <div nz-col nzSpan="12" style="display: flex; align-items: center; justify-content: start;">
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 0;">
+        TOP
+        <nz-select [(ngModel)]="selectedTop.value" (ngModelChange)="change_top($event)"
+                   [nzSuffixIcon]="nzSuffixIconNumber" nzSize="large" nzPlaceHolder="Number" style="min-width: 90px; margin-left: 10px; margin-right: 10px">
+          <nz-option *ngFor="let optionsTop of optionsTops" [nzLabel]="optionsTop.label" [nzValue]="optionsTop.value"></nz-option>
+        </nz-select>
+        METHOD REQUEST VOLUMES
+      </h3>
+      <ng-template #nzSuffixIconNumber><i>#</i></ng-template>
+    </div>
+    <div nz-col nzSpan="12" style="display: flex; align-items: center; justify-content: end;">
+      FILTER BY NETWORK
+      <nz-select [(ngModel)]="selectedNetwork.value" (ngModelChange)="change_network($event)"
+                 nzSize="large" nzPlaceHolder="Network" style="min-width: 175px; margin-left: 10px; margin-right: 10px">
+        <nz-option *ngFor="let optionsNetwork of optionsNetworks" [nzLabel]="optionsNetwork.label" [nzValue]="optionsNetwork.value"></nz-option>
+      </nz-select>
+      <button nz-button type="button" (click)="getMethodsVolume(this.selectedProjectData.value, this.selectedLast.value, this.selectedNetwork.value, this.selectedTop.value)" nzType="default">
+        <i nz-icon nzType="reload" nzTheme="outline"></i>
+      </button>
+    </div>
+  </div>
+
+  <nz-spin nzSize="large" [nzSpinning]="nzSpinningMethodsVolume">
+    <nz-card nzHoverable [nzBordered]="false" style="min-height: 450px; width: 100%">
+      <div style="min-height: 400px; display: flex; align-items: center; justify-content: center;"
+           *ngIf="!methodsVolumeResponseInterface && methodsVolumeErrorMessage">
+        <nz-result [nzStatus]="methodsVolumeErrorMessage.type" [nzTitle]="methodsVolumeErrorMessage?.message"></nz-result>
+      </div>
+      <div style="min-height: 400px; display: flex; align-items: center; justify-content: center;"
+           *ngIf="methodsVolumeResponseInterface && !methodsVolumeErrorMessage && methodsVolumeResponseInterface?.data?.is_empty">
+        <nz-empty nzNotFoundImage="simple" *ngIf="methodsVolumeResponseInterface?.data?.is_empty && !methodsVolumeErrorMessage"></nz-empty>
+      </div>
+      <div style="height: 100%; width: 100%"
+           *ngIf="methodsVolumeChartConfigurationData && methodsVolumeResponseInterface && !methodsVolumeErrorMessage && !methodsVolumeResponseInterface?.data?.is_empty">
+        <div nz-row nzGutter="16" nzJustify="space-between">
+          <div nz-col *ngFor="let totalMethodVolume of totalMethodsVolume">
+            <nz-statistic
+              [nzValue]="''"
+              [nzPrefix]="prefixTplSwapRight"
+              [nzTitle]="totalMethodVolume"
+              [nzSuffix]="nzSuffixValidInvalid"
+            ></nz-statistic>
+            <ng-template #nzSuffixValidInvalid>
+              <div nz-row style="font-size: 18px">
+                <div nz-col style="color: #0645f7" nz-tooltip nzTooltipTitle="Total Volume">{{methodsVolumeResponseInterface?.data?.methods[totalMethodVolume].total_volume | number}} <nz-divider [nzType]="'vertical'"></nz-divider></div>
+                <div nz-col style="color: #52c41a"nz-tooltip nzTooltipTitle="Total Valid Volume">{{methodsVolumeResponseInterface?.data?.methods[totalMethodVolume].total_valid_volume | number}} <nz-divider [nzType]="'vertical'"></nz-divider></div>
+                <div nz-col style="color: #f5222d" nz-tooltip nzTooltipTitle="Total Invalid Volume">{{methodsVolumeResponseInterface?.data?.methods[totalMethodVolume].total_invalid_volume | number}}</div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+        <ng-template #prefixTplSwapRight><i nz-icon nzType="swap-right"></i></ng-template>
+        <canvas baseChart height="450" style="width: 100%"
+                [data]="methodsVolumeChartConfigurationData"
+                [options]="methodsVolumeChartConfigurationOptions"
+                [type]="methodsVolumeChartType"></canvas>
+      </div>
+    </nz-card>
+  </nz-spin>
+
+  <div nz-row style="margin: 16px 0">
+    <div nz-col nzSpan="12" style="display: flex; align-items: center; justify-content: start;">
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 0;">NETWORK REQUEST VOLUMES</h3>
+    </div>
+    <div nz-col nzSpan="12" style="display: flex; align-items: center; justify-content: end;">
+      FILTER BY METHOD
+      <nz-select [(ngModel)]="selectedMethod.value" (ngModelChange)="change_method($event)" [nzDropdownMatchSelectWidth]="false"
+                 nzSize="large" nzPlaceHolder="Method" style="min-width: 175px; margin-left: 10px; margin-right: 10px">
+        <nz-option *ngFor="let optionsMethod of optionsMethods" [nzLabel]="optionsMethod.label" [nzValue]="optionsMethod.value"></nz-option>
+      </nz-select>
+      <button nz-button type="button" (click)="getNetworksVolume(this.selectedProjectData.value, this.selectedLast.value, this.selectedMethod.value)" nzType="default">
+        <i nz-icon nzType="reload" nzTheme="outline"></i>
+      </button>
+    </div>
+  </div>
+
+  <nz-spin nzSize="large" [nzSpinning]="nzSpinningNetworksVolume">
+    <nz-card nzHoverable [nzBordered]="false" style="min-height: 450px; width: 100%">
+      <div style="min-height: 400px; display: flex; align-items: center; justify-content: center;"
+           *ngIf="!networksVolumeResponseInterface && networksVolumeErrorMessage">
+        <nz-result [nzStatus]="networksVolumeErrorMessage.type" [nzTitle]="networksVolumeErrorMessage?.message"></nz-result>
+      </div>
+      <div style="min-height: 400px; display: flex; align-items: center; justify-content: center;"
+           *ngIf="networksVolumeResponseInterface && !networksVolumeErrorMessage && networksVolumeResponseInterface?.data?.is_empty">
+        <nz-empty nzNotFoundImage="simple" *ngIf="networksVolumeResponseInterface?.data?.is_empty && !networksVolumeErrorMessage"></nz-empty>
+      </div>
+      <div style="height: 100%; width: 100%"
+           *ngIf="networksVolumeChartConfigurationData && networksVolumeResponseInterface && !networksVolumeErrorMessage && !networksVolumeResponseInterface?.data?.is_empty">
+        <div nz-row nzGutter="32">
+          <div nz-col *ngFor="let totalNetworkVolume of totalNetworksVolume">
+            <nz-statistic
+              [nzValue]="''"
+              [nzPrefix]="prefixTplSwapRight"
+              [nzTitle]="totalNetworkVolume | titlecase"
+              [nzSuffix]="nzSuffixValidInvalid"
+            ></nz-statistic>
+            <ng-template #nzSuffixValidInvalid>
+              <div nz-row style="font-size: 18px">
+                <div nz-col style="color: #0645f7" nz-tooltip nzTooltipTitle="Total Volume">{{networksVolumeResponseInterface?.data?.networks[totalNetworkVolume].total_volume | number}} <nz-divider [nzType]="'vertical'"></nz-divider></div>
+                <div nz-col style="color: #52c41a"nz-tooltip nzTooltipTitle="Total Valid Volume">{{networksVolumeResponseInterface?.data?.networks[totalNetworkVolume].total_valid_volume | number}} <nz-divider [nzType]="'vertical'"></nz-divider></div>
+                <div nz-col style="color: #f5222d" nz-tooltip nzTooltipTitle="Total Invalid Volume">{{networksVolumeResponseInterface?.data?.networks[totalNetworkVolume].total_invalid_volume | number}}</div>
+              </div>
+            </ng-template>
+          </div>
+        </div>
+        <ng-template #prefixTplSwapRight><i nz-icon nzType="swap-right"></i></ng-template>
+        <canvas baseChart height="450" style="width: 100%"
+                [data]="networksVolumeChartConfigurationData"
+                [options]="networksVolumeChartConfigurationOptions"
+                [type]="networksVolumeChartType"></canvas>
+      </div>
+    </nz-card>
+  </nz-spin>
+
+  <div nz-row style="margin: 16px 0">
+    <div nz-col nzSpan="12" style="display: flex; align-items: center; justify-content: start;">
+      <h3 style="font-size: 18px; font-weight: lighter; margin: 0;">REQUESTS ACTIVITY</h3>
+    </div>
+    <div nz-col nzSpan="12" style="display: flex; align-items: center; justify-content: end;">
+      <button nz-button type="button" (click)="getRequestActivity(this.selectedProjectData.value, this.selectedLast.value)" nzType="default">
+        <i nz-icon nzType="reload" nzTheme="outline"></i>
+      </button>
+    </div>
+  </div>
+
+  <nz-spin nzSize="large" [nzSpinning]="this.nzSpinningRequestsActivity">
+    <nz-card nzHoverable [nzBordered]="false" style="min-height: 450px; width: 100%;">
+      <div style="min-height: 400px; height: 100%; display: flex; align-items: center; justify-content: center;"
+           *ngIf="!requestsActivityResponseInterface && requestsActivityErrorMessage">
+        <nz-result [nzStatus]="requestsActivityErrorMessage.type" [nzTitle]="requestsActivityErrorMessage?.message"></nz-result>
+      </div>
+      <div style="min-height: 400px; height: 100%; display: flex; align-items: center; justify-content: center;"
+           *ngIf="requestsActivityResponseInterface && !requestsActivityErrorMessage && requestsActivityResponseInterface?.data?.is_empty">
+        <nz-empty nzNotFoundImage="simple" *ngIf="requestsActivityResponseInterface?.data?.is_empty && !requestsActivityErrorMessage"></nz-empty>
+      </div>
+      <nz-table #basicTable [nzData]="this.requestsActivityResponseInterface?.data?.requests_activity"
+                *ngIf="requestsActivityResponseInterface && !requestsActivityErrorMessage && !requestsActivityResponseInterface?.data?.is_empty">
+        <thead>
+          <tr>
+            <th>TIMESTAMP</th>
+            <th>METHOD</th>
+            <th>NETWORK</th>
+            <th>REQUESTS VOLUME</th>
+            <th><nz-tag nzColor="#52c41a"><i nz-icon nzType="check"></i></nz-tag> SUCCESSFUL REQUESTS</th>
+            <th><nz-tag nzColor="#f5222d"><i nz-icon nzType="close"></i></nz-tag> FAILED REQUESTS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let data of basicTable.data">
+            <td>{{ data.timestamp.$date | date:('day' === this.requestsActivityResponseInterface?.data?.datetime_unit ? 'mediumDate' : 'mediumTime'):'UTC'}}</td>
+            <td>{{ data.method }}</td>
+            <td>{{ data.network | titlecase }}</td>
+            <td>{{ data.volume }}</td>
+            <td>{{ percent_calculator(data.volume, data.valid) | number:'1.0-2' }}%</td>
+            <td>{{ percent_calculator(data.volume, data.invalid) | number:'1.0-2' }}%</td>
+          </tr>
+        </tbody>
+      </nz-table>
+    </nz-card>
+  </nz-spin>
+</div>
+<div *ngIf="!projectListData && !nzLoadingProjects" style="display: flex; width: 100%; height: 100%; justify-content: center; align-items: center;">
+  <nz-card nzHoverable>
+    <nz-result [nzIcon]="nzIcon404" [nzTitle]="nzTitle" [nzSubTitle]="nzSubTitle">
+      <div nz-result-extra>
+        <button nz-button nzType="primary" (click)="reload()">RELOAD</button>
+      </div>
+      <ng-template #nzIcon404>
+        <i nz-icon nzType="close-circle" style="color: #f5222d" nzTheme="fill"></i>
+      </ng-template>
+      <ng-template #nzTitle>
+        <h4 style="font-size: 32px; font-weight: lighter; text-align: center">Oops ... Can't get statistics data</h4>
+      </ng-template>
+      <ng-template #nzSubTitle>
+        <p style="font-size: 18px; font-weight: lighter; text-align: center">
+          {{projectListAlert?.message}}
+        </p>
+      </ng-template>
+    </nz-result>
+  </nz-card>
+</div>
+
+<!--<h3 style="font-size: 18px; font-weight: lighter; margin: 16px 0">ETH_CALL ACTIVITY(IN THE LAST 30 MINUTES)</h3>-->
+
+<!--<nz-card nzHoverable [nzBordered]="false" style="height: 200px">-->
+<!--  <nz-empty nzNotFoundImage="simple"></nz-empty>-->
+<!--</nz-card>-->

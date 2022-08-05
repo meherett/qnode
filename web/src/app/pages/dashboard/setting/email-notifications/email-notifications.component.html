@@ -1,0 +1,8 @@
+<form nz-form [formGroup]="formGroup" nzLayout="vertical">
+  <nz-form-item style="margin-bottom: 0">
+    <nz-form-control>
+      <label nz-checkbox style="font-size: 18px" formControlName="email_notification" (nzCheckedChange)="update(this.userResponseInterface?.data?._id?.$oid, formGroup.value)">Email Notifications</label>
+      <p style="margin-bottom: 0; margin-left: 24px">Receive emails when you are at or near your daily request limit</p>
+    </nz-form-control>
+  </nz-form-item>
+</form>

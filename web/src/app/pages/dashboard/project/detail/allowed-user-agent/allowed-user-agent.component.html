@@ -1,0 +1,48 @@
+<nz-alert nzShowIcon nzCloseable *ngIf="allowedUserAgentAlert" [nzType]="allowedUserAgentAlert.type" [nzMessage]="allowedUserAgentAlert.message" style="margin-bottom: 20px" (nzOnClose)="allowedUserAgentAlert = null"></nz-alert>
+<form nz-form [formGroup]="formGroup" nzLayout="vertical"
+      (ngSubmit)="addAllowedUserAgent(this.projectResponseInterface?.data?._id?.$oid, formGroup.value)">
+  <div style="display: flex; flex-direction: row;">
+      <nz-form-item style="margin-bottom: 0; width: 100%">
+        <nz-form-label nzRequired>User-Agent</nz-form-label>
+        <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipUsername">
+          <input nz-input nzSize="large" type="text" formControlName="user_agent">
+          <ng-template #nzErrorTipUsername let-control>
+            <ng-container *ngIf="control.errors?.required">User-Agent is required.</ng-container>
+            <ng-container *ngIf="control.errors?.maxlength">Maximum length must be 200.</ng-container>
+          </ng-template>
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item style="margin-bottom: 0; margin-left: 16px;">
+        <nz-form-label></nz-form-label>
+        <nz-form-control>
+          <div class="actions-end">
+            <button nz-button type="button" (click)="clear()" nzType="default" style="margin-right: 15px">
+              <i nz-icon nzType="clear" nzTheme="outline"></i>
+            </button>
+            <button nz-button type="submit" [nzLoading]="nzLoadingAdd" [disabled]="false" nzType="primary">ADD</button>
+          </div>
+        </nz-form-control>
+      </nz-form-item>
+  </div>
+</form>
+
+<nz-divider></nz-divider>
+
+<nz-spin nzSize="large" [nzSpinning]="nzLoadingAdd || nzLoadingRemove">
+  <nz-table #allowed_user_agents nzBordered [nzData]="projectResponseInterface?.data?.security?.allowed_user_agents" [nzShowPagination]="true" [nzPageSize]="5">
+    <thead>
+    <tr>
+      <th nzAlign="left" style="width: 100%">Allowed User-Agent</th>
+      <th nzAlign="center">Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr *ngFor="let allowed_user_agent of allowed_user_agents.data">
+      <td nzBreakWord nzAlign="left" style="width: 100%">{{ allowed_user_agent }}</td>
+      <td nzAlign="center">
+        <button nz-button nzSize="default" type="button" (click)="removeAllowedUserAgent(this.projectResponseInterface?.data?._id?.$oid, { user_agent: allowed_user_agent })" nzType="default">REMOVE</button>
+      </td>
+    </tr>
+    </tbody>
+  </nz-table>
+</nz-spin>

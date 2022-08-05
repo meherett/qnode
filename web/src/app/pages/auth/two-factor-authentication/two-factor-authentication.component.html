@@ -1,0 +1,41 @@
+<div class="main-div">
+  <div class="child-div">
+    <div class="h5">
+      <h5>2-FACTOR AUTHENTICATION</h5>
+    </div>
+    <nz-card nzHoverable>
+      <nz-alert nzShowIcon nzCloseable *ngIf="twoFactorAuthenticationAlert" [nzType]="twoFactorAuthenticationAlert.type" [nzMessage]="twoFactorAuthenticationAlert.message" style="margin-bottom: 20px" (nzOnClose)="twoFactorAuthenticationAlert = null"></nz-alert>
+      <form nz-form [formGroup]="formGroup" nzLayout="vertical"
+            (ngSubmit)="twoFactorAuthentication(formGroup.value)">
+        <nz-form-item>
+          <nz-form-label nzRequired>Verify OTP</nz-form-label>
+          <nz-form-control nzHasFeedback [nzErrorTip]="nzErrorTipOTP">
+            <input nz-input nzSize="large" type="number" formControlName="otp">
+            <ng-template #nzErrorTipOTP let-control>
+              <ng-container *ngIf="control.errors?.required">OTP is required.</ng-container>
+            </ng-template>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item style="margin-bottom: 0">
+          <nz-form-control>
+            <div class="actions-end">
+              <button nz-button type="button" (click)="clear()" nzType="default" style="margin-right: 15px">
+                <i nz-icon nzType="clear" nzTheme="outline"></i>
+              </button>
+              <button nz-button type="submit" [nzLoading]="nzLoading"
+                      nzType="primary">SUBMIT</button>
+            </div>
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-card>
+  </div>
+  <div class="passport-footer">
+    <div style="margin: 0; padding: 0;">
+      Create an account
+      <a routerLink="/register">here</a>.
+      <nz-divider nzType="vertical"></nz-divider>
+      <a routerLink="/login">Already have an account?</a>
+    </div>
+  </div>
+</div>
